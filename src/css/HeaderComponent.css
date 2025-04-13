@@ -1,0 +1,76 @@
+/* Header with light background */
+.header-wrapper {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Container flex setup */
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Stick to edges */
+  .left-container {
+    display: flex;
+    align-items: center;
+    margin-left: 2px;
+    padding-left: 0;
+  }
+  
+  .right-container {
+    display: flex;
+    align-items: center;
+    margin-right: 2px;
+    padding-right: 0;
+  }
+  
+  /* Logo */
+  .logo img {
+    height: 50px;
+    width: auto;
+    object-fit: contain;
+  }
+  
+  /* Stock cards spacing */
+  .stocks {
+    display: flex;
+    gap: 1rem;
+    margin-left: 1rem;
+  }
+  
+  /* Navigation */
+  nav ul {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Default nav link styling */
+  .nav-link {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151; /* Tailwind: text-gray-700 */
+    text-decoration: none;
+  }
+  
+  .nav-link:hover {
+    text-decoration: underline;
+    color: #2563eb; /* Tailwind: text-blue-600 */
+  }
+  
+  /* Active nav link */
+  .nav-link.active {
+    background-color: #e5e7eb; /* Tailwind: bg-gray-200 */
+    color: #1d4ed8; /* Tailwind: text-blue-700 */
+    font-weight: 600;
+  }
+  

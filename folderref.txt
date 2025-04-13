@@ -1,0 +1,13 @@
+src/
+│
+├── components/
+│   ├── HeaderComponents.tsx
+│   ├── SidebarComponent.tsx
+│   └── pages/
+│       ├── Home.tsx
+│       ├── About.tsx
+│       ├── Services.tsx
+│       └── Contact.tsx
+│
+├── App.tsx
+└── main.tsx
