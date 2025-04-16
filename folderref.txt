@@ -1,13 +1,43 @@
-src/
-│
-├── components/
-│   ├── HeaderComponents.tsx
-│   ├── SidebarComponent.tsx
-│   └── pages/
-│       ├── Home.tsx
-│       ├── About.tsx
-│       ├── Services.tsx
-│       └── Contact.tsx
-│
-├── App.tsx
-└── main.tsx
+.
+├── eslint.config.js
+├── folderref.txt
+├── home.jpeg
+├── index.html
+├── package.json
+├── package-lock.json
+├── public
+│   └── vite.svg
+├── README.md
+├── src
+│   ├── api
+│   │   ├── GetAPI.tsx
+│   │   ├── PostAPI.tsx
+│   │   ├── PutAPI.tsx
+│   │   └── Websocket.tsx
+│   ├── App.css
+│   ├── App.tsx
+│   ├── assets
+│   │   ├── logo.jpg
+│   │   └── react.svg
+│   ├── components
+│   │   ├── BodeyComponents.tsx
+│   │   ├── FooterComponents.tsx
+│   │   ├── HeaderComponents.tsx
+│   │   ├── pages
+│   │   │   ├── Home.tsx
+│   │   │  
+│   │   ├── SidebarComponent.tsx
+│   │   └── sub-components
+│   │       ├── sub-compo.tsx
+│   │       
+│   ├── css
+│   │   └── HeaderComponent.css
+│   ├── index.css
+│   ├── main.tsx
+│   └── vite-env.d.ts
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
+
+9 directories, 35 files
