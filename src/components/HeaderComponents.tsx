@@ -8,9 +8,9 @@ import { websocket_api_call } from '../services/Websocket';
 const HeaderComponents = () => {
 
   const [stocks, setStocks] = useState([
-    { stock_name: 's1', points: 0, isUp: null, percentage: '' },
-    { stock_name: 's2', points: 0, isUp: null, percentage: '' },
-    { stock_name: 's3', points: 0, isUp: null, percentage: '' },
+    { stock_name: 's1', points: 0, isUp: false, percentage: '' },
+    { stock_name: 's2', points: 0, isUp: false, percentage: '' },
+    { stock_name: 's3', points: 0, isUp: false, percentage: '' },
   ]);
 
 
@@ -73,14 +73,14 @@ const HeaderComponents = () => {
     const socket = websocket_api_call(url, clientId, tokens, (data) => {
       if (Array.isArray(data.live_prices)) {
         setStocks((prevStocks) => {
-          const updatedStocks = data.live_prices.map((stock, index) => {
+          const updatedStocks = data.live_prices.map((stock: any, index: number) => {
             const prev = prevStocks[index];
             const prevPrice = prev?.points || 0;
             const currentPrice = stock.price;
             const isUp = currentPrice > prevPrice;
             const percentage = prevPrice === 0
               ? '0.00'
-              : ((Math.abs(currentPrice - prevPrice) / prevPrice) * 100).toFixed(2);
+              : ((Math.abs(currentPrice - prevPrice) / prevPrice) * 100)?.toFixed(2);
   
             return {
               stock_name: stock.stock_name,
@@ -90,7 +90,7 @@ const HeaderComponents = () => {
             };
           });
   
-          console.log('Updated Stocks:', updatedStocks);
+          // console.log('Updated Stocks:', updatedStocks);
           return updatedStocks;
         });
       }
@@ -117,8 +117,8 @@ const HeaderComponents = () => {
             <StockCard stock_name="Nifty Fin Services" points={1425.0} isUp={true} percentage="+0.75%" />
           </div> */}
           <div className="stocks">
-            {stocks.map((stock, index) => (
-              console.log('stock:', stock.stock_name),
+            {stocks.map((stock, index: any) => (
+              // console.log('stock:', stock.stock_name),
               // <StockCard
               //   key={index}
               //   stock_name={stock.stock_name}
@@ -127,6 +127,7 @@ const HeaderComponents = () => {
               //   percentage={'0%'}
               // />
               <StockCard
+                id={index}
                 key={index}
                 stockName={stock.stock_name} // ✅ corrected name
                 points={stock.points}

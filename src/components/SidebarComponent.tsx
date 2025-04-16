@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa'; // Icons for up/down arrows
+import get_api_call from '../services/GetAPI';
 
 // Dummy data for NSE and Options stocks
 const nseStocks = [
@@ -17,6 +18,47 @@ const optionsStocks = [
 ];
 
 const SidebarComponent: React.FC = () => {
+  const [nseStocks, setNseStocks] = useState([
+      { name: 'RELIANCE', points: 12.34, percentage: 1.23 },
+      { name: 'TCS', points: -8.56, percentage: -0.87 },
+      { name: 'INFY', points: 5.21, percentage: 0.45 },
+      { name: 'HDFC', points: -3.87, percentage: -1.12 },
+      { name: 'SBIN', points: 0.45, percentage: 0.18 },
+    ]);
+  
+    const [optionsStocks, setOptionsStocks] = useState([
+      { name: 'NIFTY 50', points: 15.22, percentage: 1.45 },
+      { name: 'BANKNIFTY', points: -7.14, percentage: -0.56 },
+      { name: 'FINNIFTY', points: 4.67, percentage: 0.72 },
+    ]);
+
+
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          console.log('Fetching stock data...');
+          const nseData = await get_api_call('http://127.0.0.1:8000/common/get/stock/tocken');
+          const optionsData = await get_api_call('http://127.0.0.1:8000/common/get/stock/tocken');
+  
+          console.log('NSE Stocks:', nseData);
+          console.log('Options Stocks:', optionsData);
+  
+          if (Array.isArray(nseData.data)) {
+            setNseStocks(nseData.data);
+          }
+  
+          if (Array.isArray(optionsData.data)) {
+            setOptionsStocks(optionsData.data);
+          }
+        } catch (error) {
+          console.error('Failed to fetch stock data', error);
+        }
+      };
+  
+      fetchData();
+    }, []);
+
+
   // State to track which tab is selected (NSE or Options)
   const [selectedTab, setSelectedTab] = useState<'NSE' | 'Options'>('NSE');
 
@@ -111,10 +153,10 @@ const SidebarComponent: React.FC = () => {
                       stock.points >= 0 ? 'text-green-600' : 'text-red-600'
                     } flex items-center`}
                   >
-                    {stock.points.toFixed(2)}
+                    {stock.points?.toFixed(2)}
                     {getArrowIcon(stock.points)}
                     <span className="ml-1">
-                      ({stock.percentage.toFixed(2)}%)
+                      ({stock.percentage?.toFixed(2)}%)
                     </span>
                   </span>
                 </div>
@@ -142,13 +184,13 @@ const SidebarComponent: React.FC = () => {
       </div>
 
       {/* Favorites list - shown only if favorites exist */}
-      {favs.length > 0 && (
+      {favs?.length > 0 && (
         <div className="mt-4">
           <h4 className="text-sm font-semibold text-gray-800 mb-2">
             Favorite {selectedTab} Stocks
           </h4>
           <ul className="space-y-1 text-sm">
-            {favs.map(favName => {
+            {favs?.map(favName => {
               const stock = stocks.find(s => s.name === favName);
               if (!stock) return null;
               return (
@@ -167,7 +209,7 @@ const SidebarComponent: React.FC = () => {
                       {stock.points.toFixed(2)}
                       {getArrowIcon(stock.points)}
                       <span className="ml-1">
-                        ({stock.percentage.toFixed(2)}%)
+                        ({stock.percentage?.toFixed(2)}%)
                       </span>
                     </span>
                   </div>
