@@ -68,7 +68,11 @@ const HeaderComponents = () => {
   useEffect(() => {
     const url = 'ws://127.0.0.1:8000/websocket/ws/stocks';
     const clientId = 'unique-client-id';
-    const tokens = ['9123', '2885', '3045'];
+  //   stock_map={"99926000":"NIFTY50",
+  //     "99926009":"BANKNIFTY",
+  //     "99926037":"FINNIFTY",
+  // }
+    const tokens = ['99926000', '99926009', '99926037'];
   
     const socket = websocket_api_call(url, clientId, tokens, (data) => {
       if (Array.isArray(data.live_prices)) {

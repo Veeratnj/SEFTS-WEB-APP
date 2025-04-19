@@ -1,21 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa'; // Icons for up/down arrows
 import get_api_call from '../services/GetAPI';
+import TradeModal from './TradeModal';
 
-// Dummy data for NSE and Options stocks
-const nseStocks = [
-  { name: 'RELIANCE', points: 12.34, percentage: 1.23 },
-  { name: 'TCS', points: -8.56, percentage: -0.87 },
-  { name: 'INFY', points: 5.21, percentage: 0.45 },
-  { name: 'HDFC', points: -3.87, percentage: -1.12 },
-  { name: 'SBIN', points: 0.45, percentage: 0.18 },
-];
 
-const optionsStocks = [
-  { name: 'NIFTY 50', points: 15.22, percentage: 1.45 },
-  { name: 'BANKNIFTY', points: -7.14, percentage: -0.56 },
-  { name: 'FINNIFTY', points: 4.67, percentage: 0.72 },
-];
 
 const SidebarComponent: React.FC = () => {
   const [nseStocks, setNseStocks] = useState([
@@ -31,6 +19,30 @@ const SidebarComponent: React.FC = () => {
       { name: 'BANKNIFTY', points: -7.14, percentage: -0.56 },
       { name: 'FINNIFTY', points: 4.67, percentage: 0.72 },
     ]);
+    // State to manage the modal for trading
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [selectedStock, setSelectedStock] = useState<{
+      name: string;
+      price: number;
+      change: string;
+      stock_token:string
+    } | null>(null);
+
+    const handleTradeClick = (stock: { name: string; points: number; percentage?: number , token:string }) => {
+      const price = stock.points;
+      const change = stock.percentage ?? 0; 
+    
+      setSelectedStock({
+        name: stock.name,
+        price: price,
+        change: `${change > 0 ? '+' : ''}${change.toFixed(2)}%`,
+        stock_token:stock.token ?? ''
+      });
+    
+      setIsModalOpen(true);
+    };
+    
+    
 
 
     useEffect(() => {
@@ -192,6 +204,7 @@ const SidebarComponent: React.FC = () => {
           <ul className="space-y-1 text-sm">
             {favs?.map(favName => {
               const stock = stocks.find(s => s.name === favName);
+              console.log('stock:', stock);
               if (!stock) return null;
               return (
                 <li
@@ -216,16 +229,31 @@ const SidebarComponent: React.FC = () => {
 
                   {/* Remove button in favorite */}
                   <button
-                    className="text-red-500 text-xs"
+                    className="bg-red-500 text-white text-xs px-3 py-1 rounded hover:bg-red-600 cursor-pointer"
                     onClick={() => handleRemoveFav(stock.name)}
                   >
                     Remove
                   </button>
+
+                  <button
+                    className="bg-green-500 text-white text-xs px-3 py-1 rounded hover:bg-green-600 cursor-pointer"
+                    onClick={() => handleTradeClick(stock)}
+                  >
+                    Trade
+                  </button>
+
                 </li>
               );
             })}
           </ul>
         </div>
+      )}
+      {selectedStock && (
+        <TradeModal
+          stock={selectedStock}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
       )}
     </div>
   );
