@@ -26,6 +26,7 @@ const TradeModal: React.FC<TradeModalProps> = ({ stock, isOpen, onClose }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedStrategy, setSelectedStrategy] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(0);
+  const [tradeCount, setTradeCount] = useState<number>(0); 
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -65,7 +66,8 @@ const TradeModal: React.FC<TradeModalProps> = ({ stock, isOpen, onClose }) => {
       strategy_uuid: selectedStrategyObj.uuid,
       stock_name: stock.name,
       stock_token: stock.stock_token, // Replace with actual token if available
-      quantity: quantity
+      quantity: quantity,
+      trade_count:tradeCount
     };
 
     try {
@@ -128,6 +130,16 @@ const TradeModal: React.FC<TradeModalProps> = ({ stock, isOpen, onClose }) => {
                 placeholder="e.g. 100"
                 value={quantity}
                 onChange={(e) => setQuantity(Number(e.target.value))}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="no-of-trade">Enter number of Trade</label>
+              <input
+                type="number"
+                id="no-of-trade"
+                placeholder="e.g. 1"
+                value={tradeCount}
+                onChange={(e) => setTradeCount(Number(e.target.value))}
               />
             </div>
             <div className="form-group">
