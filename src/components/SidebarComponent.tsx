@@ -7,17 +7,17 @@ import TradeModal from './TradeModal';
 
 const SidebarComponent: React.FC = () => {
   const [nseStocks, setNseStocks] = useState([
-      { name: 'RELIANCE', points: 12.34, percentage: 1.23 },
-      { name: 'TCS', points: -8.56, percentage: -0.87 },
-      { name: 'INFY', points: 5.21, percentage: 0.45 },
-      { name: 'HDFC', points: -3.87, percentage: -1.12 },
-      { name: 'SBIN', points: 0.45, percentage: 0.18 },
+      { name: 'RELIANCE', points: 12.34, percentage: 1.23 ,token:''},
+      { name: 'TCS', points: -8.56, percentage: -0.87 ,token:''},
+      { name: 'INFY', points: 5.21, percentage: 0.45 ,token:''},
+      { name: 'HDFC', points: -3.87, percentage: -1.12 ,token:''},
+      { name: 'SBIN', points: 0.45, percentage: 0.18 ,token:''},
     ]);
   
     const [optionsStocks, setOptionsStocks] = useState([
-      { name: 'NIFTY 50', points: 15.22, percentage: 1.45 },
-      { name: 'BANKNIFTY', points: -7.14, percentage: -0.56 },
-      { name: 'FINNIFTY', points: 4.67, percentage: 0.72 },
+      { name: 'NIFTY 50', points: 15.22, percentage: 1.45, token: '' },
+      { name: 'BANKNIFTY', points: -7.14, percentage: -0.56, token: '' },
+      { name: 'FINNIFTY', points: 4.67, percentage: 0.72, token: '' },
     ]);
     // State to manage the modal for trading
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
