@@ -32,7 +32,8 @@ const TradeModal: React.FC<TradeModalProps> = ({ stock, isOpen, onClose }) => {
   useEffect(() => {
     const fetchStrategies = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/common/get/strategies/');
+        const baseUrl = import.meta.env.VITE_API_BASE_URL;
+        const response = await fetch(`${baseUrl}/common/get/strategies/`);
         const data = await response.json();
         if (data.status === 200) {
           setStrategies(data.data);
@@ -71,8 +72,9 @@ const TradeModal: React.FC<TradeModalProps> = ({ stock, isOpen, onClose }) => {
     };
 
     try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
       const response = await post_api_call(
-        'http://127.0.0.1:8000/common/post/add/strategy/',
+        `${baseUrl}/common/post/add/strategy/`,
         undefined,
         undefined,
         { 'Content-Type': 'application/json' },

@@ -21,7 +21,8 @@ const Login: React.FC = () => {
       const encryptedData = CryptoJS.AES.encrypt(dataToEncrypt, SECRET_KEY).toString();
 
       // API call using axios
-      const response = await axios.post('http://localhost:8000/login', {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      const response = await axios.post(`${baseUrl}/login`, {
         encrypted_data: encryptedData,
         email: username,
         password: password,

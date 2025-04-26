@@ -90,7 +90,9 @@ const ActiveOrders: React.FC = () => {
       setLoading(true);
       const userData = localStorage.getItem('userData');
       const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
-      const response = await axios.get(`http://127.0.0.1:8000/portfolios/get/active/orders?user_id=${user_id}`);
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      console.log('Base URL:', baseUrl);
+      const response = await axios.get(`${baseUrl}/portfolios/get/active/orders?user_id=${user_id}`);
       if (response.data.status === 200) {
         const formattedData: OrderDataType[] = response.data.data.map((item: any) => ({
           key: item.key,

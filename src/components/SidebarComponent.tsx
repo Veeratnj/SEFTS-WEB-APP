@@ -49,8 +49,9 @@ const SidebarComponent: React.FC = () => {
       const fetchData = async () => {
         try {
           console.log('Fetching stock data...');
-          const nseData = await get_api_call('http://127.0.0.1:8000/common/get/stock/tocken');
-          const optionsData = await get_api_call('http://127.0.0.1:8000/common/get/stock/tocken');
+          const baseUrl = import.meta.env.VITE_API_BASE_URL;
+          const nseData = await get_api_call(`${baseUrl}/common/get/stock/tocken`);
+          const optionsData = await get_api_call(`${baseUrl}/common/get/stock/tocken`);
   
           console.log('NSE Stocks:', nseData);
           console.log('Options Stocks:', optionsData);

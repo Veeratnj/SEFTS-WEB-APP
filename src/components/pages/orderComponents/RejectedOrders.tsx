@@ -55,7 +55,8 @@ const RejectedOrders: React.FC = () => {
       try {
         const userData = localStorage.getItem('userData');
         const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
-        const response = await axios.get(`http://127.0.0.1:8000/portfolios/get/rejected/orders?user_id=${user_id}`);
+        const baseUrl = import.meta.env.VITE_API_BASE_URL;
+        const response = await axios.get(`${baseUrl}/portfolios/get/rejected/orders?user_id=${user_id}`);
         console.log('Response:', response.data);
 
         const orders = response.data?.data || [];

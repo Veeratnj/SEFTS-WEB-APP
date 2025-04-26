@@ -78,7 +78,8 @@ const ClosedOrders: React.FC = () => {
       setLoading(true);
       const userData = localStorage.getItem('userData');
       const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
-      const response = await axios.get(`http://127.0.0.1:8000/portfolios/get/close/orders?user_id=${user_id}`);
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      const response = await axios.get(`${baseUrl}/portfolios/get/close/orders?user_id=${user_id}`);
       if (response.data.status === 200) {
         const fetchedData: ClosedOrderDataType[] = response.data.data.map((item: any) => ({
           key: item.key,

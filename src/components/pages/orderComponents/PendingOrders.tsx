@@ -98,8 +98,8 @@ const PendingOrders: React.FC = () => {
         }
 
         const user_id = parsedData.user_id;
-
-        const response = await axios.get(`http://127.0.0.1:8000/portfolios/get/pending/orders?user_id=${user_id}`);
+        const baseUrl = import.meta.env.VITE_API_BASE_URL;
+        const response = await axios.get(`${baseUrl}/portfolios/get/pending/orders?user_id=${user_id}`);
         console.log('API Raw Response:', response.data);
 
         let pendingOrders: any[] = [];
