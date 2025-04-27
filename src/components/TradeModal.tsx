@@ -61,8 +61,10 @@ const TradeModal: React.FC<TradeModalProps> = ({ stock, isOpen, onClose }) => {
       alert('Selected strategy not found.');
       return;
     }
-
+    const userData = localStorage.getItem('userData');
+    const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
     const payload = {
+      user_id:user_id,
       strategy_name: selectedStrategyObj.strategy_name,
       strategy_uuid: selectedStrategyObj.uuid,
       stock_name: stock.name,
