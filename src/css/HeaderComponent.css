@@ -1,76 +1,81 @@
-/* Header with light background */
+/* Header with background theme */
 .header-wrapper {
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Container flex setup */
-  .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* Stick to edges */
-  .left-container {
-    display: flex;
-    align-items: center;
-    margin-left: 2px;
-    padding-left: 0;
-  }
-  
-  .right-container {
-    display: flex;
-    align-items: center;
-    margin-right: 2px;
+  background: linear-gradient(to right, #6ee7b7, #3b82f6); /* Gradient background (example) */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Inner container for safe width control */
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1rem; /* Small safe side padding */
+  width: 100%;
+}
+
+/* Container flex setup */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0; /* Only top-bottom padding, no side padding */
+  width: 100%;
+  margin: 0;
+}
+
+/* Stick to edges */
+.left-container {
+  display: flex;
+  align-items: center;
+}
+
+.right-container {
+  display: flex;
+  align-items: center;
+  margin-right: 2px;
     padding-right: 0;
-  }
-  
-  /* Logo */
-  .logo img {
-    height: 50px;
-    width: auto;
-    object-fit: contain;
-  }
-  
-  /* Stock cards spacing */
-  .stocks {
-    display: flex;
-    gap: 1rem;
-    margin-left: 1rem;
-  }
-  
-  /* Navigation */
-  nav ul {
-    display: flex;
-    gap: 0.5rem;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* Default nav link styling */
-  .nav-link {
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    color: #374151; /* Tailwind: text-gray-700 */
-    text-decoration: none;
-  }
-  
-  .nav-link:hover {
-    text-decoration: underline;
-    color: #2563eb; /* Tailwind: text-blue-600 */
-  }
-  
-  /* Active nav link */
-  .nav-link.active {
-    background-color: #e5e7eb; /* Tailwind: bg-gray-200 */
-    color: #1d4ed8; /* Tailwind: text-blue-700 */
-    font-weight: 600;
-  }
-  
+}
+
+/* Logo */
+.logo img {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* Stock cards spacing */
+.stocks {
+  display: flex;
+  gap: 1rem;
+  margin-left: 1rem;
+}
+
+/* Navigation */
+nav ul {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Default nav link styling */
+.nav-link {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ffffff; /* Tailwind: text-white for contrast */
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+  color: #2563eb; /* Tailwind: text-blue-600 */
+}
+
+/* Active nav link */
+.nav-link.active {
+  background-color: #e5e7eb; /* Tailwind: bg-gray-200 */
+  color: #1d4ed8; /* Tailwind: text-blue-700 */
+  font-weight: 600;
+}

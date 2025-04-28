@@ -8,6 +8,7 @@ import Order from './components/pages/Order';
 import Market from './components/pages/Market';
 import Tools from './components/pages/Tools';
 import Broker from './components/pages/Brokers';
+import History from './components/pages/History';
 
 import Login from './components/pages/Login';
 
@@ -39,6 +40,8 @@ const AuthenticatedLayout: React.FC = () => {
             <Route path="/brokers" element={<Broker />} />
             <Route path="/market" element={<Market />} />
             <Route path="/tools" element={<Tools />} />
+            <Route path="/history" element={<History />} />
+            <Route path="/home" element={<Navigate to="/" />} />
           </Routes>
         </div>
       </div>
