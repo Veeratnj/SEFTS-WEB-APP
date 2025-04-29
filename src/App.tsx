@@ -40,7 +40,7 @@ const AuthenticatedLayout: React.FC = () => {
             <Route path="/brokers" element={<Broker />} />
             <Route path="/market" element={<Market />} />
             <Route path="/tools" element={<Tools />} />
-            <Route path="/history" element={<History data={[]} caption={''} />} />
+            <Route path="/history" element={<History  />} />
             <Route path="/home" element={<Navigate to="/" />} />
           </Routes>
         </div>
