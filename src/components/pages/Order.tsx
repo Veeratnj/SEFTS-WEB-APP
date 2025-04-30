@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import OrderTopCard from '../sub-components/OrderTopCards';
 import ActiveOrders from './orderComponents/ActiveOrders';
 import ClosedOrders from './orderComponents/ClosedOrders';

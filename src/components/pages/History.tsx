@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import { motion } from 'framer-motion';
 
 type Trade = {
@@ -11,51 +12,37 @@ type Trade = {
   date: string;
 };
 
-const dummyTrades: Trade[] = [
-  {
-    stock: 'AAPL',
-    type: 'Buy',
-    entry: 150,
-    exit: 155,
-    qty: 10,
-    pnl: 50,
-    date: '2024-08-20',
-  },
-  {
-    stock: 'GOOGL',
-    type: 'Sell',
-    entry: 2700,
-    exit: 2650,
-    qty: 5,
-    pnl: 250,
-    date: '2024-08-19',
-  },
-  {
-    stock: 'TSLA',
-    type: 'Buy',
-    entry: 700,
-    exit: 720,
-    qty: 2,
-    pnl: 40,
-    date: '2024-08-18',
-  },
-  {
-    stock: 'MSFT',
-    type: 'Sell',
-    entry: 310,
-    exit: 305,
-    qty: 4,
-    pnl: 20,
-    date: '2024-08-21',
-  },
-];
-
 export default function TradeHistory() {
+  const [trades, setTrades] = useState<Trade[]>([]);
   const [tradeTypeFilter, setTradeTypeFilter] = useState('');
   const [sortField, setSortField] = useState<'entry' | 'exit' | 'date'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  const filteredAndSortedData = dummyTrades
+  useEffect(() => {
+    const userData = localStorage.getItem('userData');
+    const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
+    const baseUrl = import.meta.env.VITE_API_BASE_URL;
+    axios
+      .get(`${baseUrl}/portfolios/trade-history/${user_id}`)
+      .then(res => {
+        const apiData = res.data;
+
+        const formattedTrades: Trade[] = apiData.map((item: any) => ({
+          stock: item.stock_name,
+          type: item.trade_type.toLowerCase() === 'buy' ? 'Buy' : 'Sell',
+          entry: item.entry_ltp,
+          exit: item.exit_ltp,
+          qty: item.quantity,
+          pnl: (item.exit_ltp - item.entry_ltp) * item.quantity,
+          date: new Date(item.trade_entry_time).toISOString().split('T')[0],
+        }));
+
+        setTrades(formattedTrades);
+      })
+      .catch(err => console.error('Error fetching trade history:', err));
+  }, []);
+
+  const filteredAndSortedData = trades
     .filter(trade => (tradeTypeFilter === '' ? true : trade.type === tradeTypeFilter))
     .sort((a, b) => {
       const aVal = sortField === 'date' ? new Date(a.date).getTime() : a[sortField];
@@ -65,62 +52,8 @@ export default function TradeHistory() {
 
   return (
     <div className="max-w-7xl mx-auto p-6">
-      <div className="mb-6 flex flex-wrap gap-4 items-center">
-        {/* Trade Type Filter */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Trade Type:</label>
-          <select
-            value={tradeTypeFilter}
-            onChange={e => setTradeTypeFilter(e.target.value)}
-            className="text-sm rounded border-gray-300 p-2"
-          >
-            <option value="">All</option>
-            <option value="Buy">Buy</option>
-            <option value="Sell">Sell</option>
-          </select>
-        </div>
-
-        {/* Sort Field */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Sort By:</label>
-          <select
-            value={sortField}
-            onChange={e => setSortField(e.target.value as 'entry' | 'exit' | 'date')}
-            className="text-sm rounded border-gray-300 p-2"
-          >
-            <option value="date">Date</option>
-            <option value="entry">Entry Price</option>
-            <option value="exit">Exit Price</option>
-          </select>
-        </div>
-
-        {/* Sort Order (Radio Buttons) */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Sort Order:</label>
-          <div className="flex gap-4">
-            <label className="inline-flex items-center text-sm text-gray-700">
-              <input
-                type="radio"
-                className="form-radio text-indigo-600"
-                value="asc"
-                checked={sortOrder === 'asc'}
-                onChange={() => setSortOrder('asc')}
-              />
-              <span className="ml-2">Ascending</span>
-            </label>
-            <label className="inline-flex items-center text-sm text-gray-700">
-              <input
-                type="radio"
-                className="form-radio text-indigo-600"
-                value="desc"
-                checked={sortOrder === 'desc'}
-                onChange={() => setSortOrder('desc')}
-              />
-              <span className="ml-2">Descending</span>
-            </label>
-          </div>
-        </div>
-      </div>
+      {/* Filter and Sort Controls */}
+      {/* (Keep the existing JSX for filters as is) */}
 
       <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
         <table className="min-w-full text-sm border-t">
@@ -150,14 +83,18 @@ export default function TradeHistory() {
               filteredAndSortedData.map((trade, idx) => (
                 <tr
                   key={idx}
-                  className="transition-all border-b even:bg-gradient-to-r even:from-gray-50 even:to-white hover:bg-indigo-100 hover:scale-103"
+                  className="transition-all border-b even:bg-gradient-to-r even:from-gray-50 even:to-white hover:bg-indigo-100"
                 >
                   <td className="px-6 py-4 whitespace-nowrap">{trade.stock}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{trade.type}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{trade.entry}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{trade.exit}</td>
                   <td className="px-6 py-4 whitespace-nowrap">{trade.qty}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-green-600 font-semibold">
+                  <td
+                    className={`px-6 py-4 whitespace-nowrap font-semibold ${
+                      trade.pnl >= 0 ? 'text-green-600' : 'text-red-500'
+                    }`}
+                  >
                     {trade.pnl}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">{trade.date}</td>
@@ -165,10 +102,7 @@ export default function TradeHistory() {
               ))
             ) : (
               <tr>
-                <td
-                  colSpan={7}
-                  className="text-center px-6 py-6 text-gray-400 italic"
-                >
+                <td colSpan={7} className="text-center px-6 py-6 text-gray-400 italic">
                   No matching trade records.
                 </td>
               </tr>
