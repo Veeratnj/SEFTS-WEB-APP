@@ -9,71 +9,16 @@ import { motion } from 'framer-motion';
 const Home = () => {
   const [pieData, setPieData] = useState<{ name: string; value: number }[]>([]);
   const [barData, setBarData] = useState<{ name: string; performance: number }[]>([]);
-  const [filter, setFilter] = useState('1w');
+  const [barChartfilter, setbarChartfilter] = useState('1w');
+  const [pieChartfilter, setpieChartfilter] = useState('1w');
+  const [investmentSMFilter, setinvestmentSMFilter] = useState('1w');
+  const [returnsSMFilter, setreturnsSMFilter] = useState('1w');
+
   const [investment, setInvestment] = useState(0);
   const [returns, setReturns] = useState(0);
   const userData = localStorage.getItem('userData');
   const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
-
-  useEffect(() => {
-    const fetchPieChartData = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/portfolios/get/piechart/data`, {
-          params: { user_id: user_id },
-        });
-        const data = response.data.data;
-        const investment = data.total_investment;
-        const gain = data.profit;
-        const chartData = [
-          { name: 'Gain', value: gain },
-          { name: 'Investment', value: investment },
-        ];
-        setPieData(chartData);
-      } catch (error) {
-        console.error('Error fetching pie chart data:', error);
-      }
-    };
-
-    fetchPieChartData();
-  }, []);
-
-  useEffect(() => {
-    const fetchBarChartData = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/portfolios/get/barchart/details`, {
-          params: { user_id: user_id, filter },
-        });
-        const data = response.data.data;
-        const transformedData = data.map((item: any) => ({
-          name: item.stockName,
-          performance: item.totalProfitOrLoss,
-        }));
-        setBarData(transformedData);
-      } catch (error) {
-        console.error('Error fetching bar chart data:', error);
-      }
-    };
-
-    fetchBarChartData();
-  }, [filter]);
-
-  useEffect(() => {
-    const fetchSpeedometerData = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}/portfolios/get/speedometer/details`, {
-          params: { user_id: user_id },
-        });
-        const data = response.data.data;
-        setInvestment(data.overallInvestment);
-        setReturns(data.overallReturns);
-      } catch (error) {
-        console.error('Error fetching speedometer data:', error);
-      }
-    };
-
-    fetchSpeedometerData();
-  }, []);
 
   const COLORS = ['#0088FE', '#FF8042'];
 
@@ -89,6 +34,78 @@ const Home = () => {
       },
     }),
   };
+
+  const fetchPieChartData = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/portfolios/get/piechart/data`, {
+        params: { user_id, filter: pieChartfilter },
+      });
+      const data = response.data.data;
+      const chartData = [
+        { name: 'Gain', value: data.profit },
+        { name: 'Investment', value: data.total_investment },
+      ];
+      setPieData(chartData);
+    } catch (error) {
+      console.error('Error fetching pie chart data:', error);
+    }
+  };
+
+  const fetchBarChartData = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/portfolios/get/barchart/details`, {
+        params: { user_id, filter: barChartfilter },
+      });
+      const data = response.data.data;
+      const transformedData = data.map((item: any) => ({
+        name: item.stockName,
+        performance: item.totalProfitOrLoss,
+      }));
+      setBarData(transformedData);
+    } catch (error) {
+      console.error('Error fetching bar chart data:', error);
+    }
+  };
+
+  const fetchInvestmentData = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/portfolios/get/speedometer/details`, {
+        params: { user_id, filter: investmentSMFilter },
+      });
+      setInvestment(response.data.data.overallInvestment);
+    } catch (error) {
+      console.error('Error fetching investment data:', error);
+    }
+  };
+
+  const fetchReturnsData = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}/portfolios/get/speedometer/details`, {
+        params: { user_id, filter: returnsSMFilter },
+      });
+      setReturns(response.data.data.overallReturns);
+    } catch (error) {
+      console.error('Error fetching returns data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPieChartData();
+  }, [pieChartfilter]);
+
+  useEffect(() => {
+    fetchBarChartData();
+  }, [barChartfilter]);
+
+  useEffect(() => {
+    fetchInvestmentData();
+  }, [investmentSMFilter]);
+
+  useEffect(() => {
+    fetchReturnsData();
+  }, [returnsSMFilter]);
+
+  const filterOptions = ['1d', '1w', '1m', '1y'];
 
   return (
     <div className="h-full w-full bg-gray-50 flex items-center justify-center min-h-screen">
@@ -110,16 +127,27 @@ const Home = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Pie Chart */}
           <motion.div
-            className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col"
+            className="bg-gray-100 rounded-lg shadow-inner h-80 flex flex-col"
             custom={0}
             variants={cardVariants}
             initial="hidden"
             animate="visible"
           >
-            <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2 px-4">Gain vs Investment</h2>
+            <div className="flex justify-between items-center px-4 mt-4">
+              <h2 className="text-lg font-semibold text-gray-700">Gain vs Investment</h2>
+              <select
+                value={pieChartfilter}
+                onChange={(e) => setpieChartfilter(e.target.value)}
+                className="border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {filterOptions.map(option => (
+                  <option key={option} value={option}>{option.toUpperCase()}</option>
+                ))}
+              </select>
+            </div>
             <div className="flex-grow px-4">
               {pieData.length === 0 ? (
-                <p className="text-center text-gray-500">No data available for the pie chart.</p>
+                <p className="text-center text-gray-500 mt-4">No data available for the pie chart.</p>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -144,7 +172,7 @@ const Home = () => {
 
           {/* Bar Chart */}
           <motion.div
-            className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col"
+            className="bg-gray-100 rounded-lg shadow-inner h-80 flex flex-col"
             custom={1}
             variants={cardVariants}
             initial="hidden"
@@ -153,19 +181,18 @@ const Home = () => {
             <div className="flex justify-between items-center px-4 mt-4">
               <h2 className="text-lg font-semibold text-gray-700">User Performance</h2>
               <select
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
+                value={barChartfilter}
+                onChange={(e) => setbarChartfilter(e.target.value)}
                 className="border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="1d">1 Day</option>
-                <option value="1w">1 Week</option>
-                <option value="1m">1 Month</option>
-                <option value="1y">1 Year</option>
+                {filterOptions.map(option => (
+                  <option key={option} value={option}>{option.toUpperCase()}</option>
+                ))}
               </select>
             </div>
             <div className="flex-grow px-4 overflow-x-auto">
               {barData.length === 0 ? (
-                <p className="text-center text-gray-500">No data available for the bar chart.</p>
+                <p className="text-center text-gray-500 mt-4">No data available for the bar chart.</p>
               ) : (
                 <div style={{ width: `${barData.length * 100}px`, height: '100%' }}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -189,15 +216,26 @@ const Home = () => {
             </div>
           </motion.div>
 
-          {/* Speedometer Chart 1 */}
+          {/* Investment Speedometer */}
           <motion.div
-            className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col items-center justify-center"
+            className="bg-gray-100 rounded-lg shadow-inner h-80 flex flex-col items-center justify-center"
             custom={2}
             variants={cardVariants}
             initial="hidden"
             animate="visible"
           >
-            <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Investment Indicator</h2>
+            <div className="flex justify-between w-full px-6">
+              <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Investment Indicator</h2>
+              <select
+                value={investmentSMFilter}
+                onChange={(e) => setinvestmentSMFilter(e.target.value)}
+                className="border border-gray-300 rounded-md px-2 py-1 mt-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {filterOptions.map(option => (
+                  <option key={option} value={option}>{option.toUpperCase()}</option>
+                ))}
+              </select>
+            </div>
             <Speedometer
               maxValue={1000000}
               value={investment}
@@ -217,15 +255,26 @@ const Home = () => {
             />
           </motion.div>
 
-          {/* Speedometer Chart 2 */}
+          {/* Returns Speedometer */}
           <motion.div
-            className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col items-center justify-center"
+            className="bg-gray-100 rounded-lg shadow-inner h-80 flex flex-col items-center justify-center"
             custom={3}
             variants={cardVariants}
             initial="hidden"
             animate="visible"
           >
-            <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Returns Indicator</h2>
+            <div className="flex justify-between w-full px-6">
+              <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Returns Indicator</h2>
+              <select
+                value={returnsSMFilter}
+                onChange={(e) => setreturnsSMFilter(e.target.value)}
+                className="border border-gray-300 rounded-md px-2 py-1 mt-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {filterOptions.map(option => (
+                  <option key={option} value={option}>{option.toUpperCase()}</option>
+                ))}
+              </select>
+            </div>
             <Speedometer
               maxValue={1000000}
               value={returns}
