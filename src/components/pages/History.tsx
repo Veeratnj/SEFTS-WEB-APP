@@ -33,7 +33,8 @@ export default function TradeHistory() {
           entry: item.entry_ltp,
           exit: item.exit_ltp,
           qty: item.quantity,
-          pnl: (item.exit_ltp - item.entry_ltp) * item.quantity,
+          // pnl: (item.exit_ltp - item.entry_ltp) * item.quantity,
+          pnl:item.pnl,
           date: new Date(item.trade_entry_time).toISOString().split('T')[0],
         }));
 

@@ -1,100 +1,251 @@
-import React from 'react';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import Speedometer from 'react-d3-speedometer';
+import React, { useEffect, useState } from 'react';
+import {
+  PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer,
+} from 'recharts';
+import Speedometer, { CustomSegmentLabelPosition } from 'react-d3-speedometer';
+import axios from 'axios';
+import { motion } from 'framer-motion';
 
 const Home = () => {
-  const pieData = [
-    { name: 'Profit', value: 400 },
-    { name: 'Loss', value: 300 },
-  ];
+  const [pieData, setPieData] = useState<{ name: string; value: number }[]>([]);
+  const [barData, setBarData] = useState<{ name: string; performance: number }[]>([]);
+  const [filter, setFilter] = useState('1w');
+  const [investment, setInvestment] = useState(0);
+  const [returns, setReturns] = useState(0);
+  const userData = localStorage.getItem('userData');
+  const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  const barData = [
-    { name: 'Jan', performance: 400 },
-    { name: 'Feb', performance: 300 },
-    { name: 'Mar', performance: 500 },
-  ];
+  useEffect(() => {
+    const fetchPieChartData = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/portfolios/get/piechart/data`, {
+          params: { user_id: user_id },
+        });
+        const data = response.data.data;
+        const investment = data.total_investment;
+        const gain = data.profit;
+        const chartData = [
+          { name: 'Gain', value: gain },
+          { name: 'Investment', value: investment },
+        ];
+        setPieData(chartData);
+      } catch (error) {
+        console.error('Error fetching pie chart data:', error);
+      }
+    };
+
+    fetchPieChartData();
+  }, []);
+
+  useEffect(() => {
+    const fetchBarChartData = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/portfolios/get/barchart/details`, {
+          params: { user_id: user_id, filter },
+        });
+        const data = response.data.data;
+        const transformedData = data.map((item: any) => ({
+          name: item.stockName,
+          performance: item.totalProfitOrLoss,
+        }));
+        setBarData(transformedData);
+      } catch (error) {
+        console.error('Error fetching bar chart data:', error);
+      }
+    };
+
+    fetchBarChartData();
+  }, [filter]);
+
+  useEffect(() => {
+    const fetchSpeedometerData = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/portfolios/get/speedometer/details`, {
+          params: { user_id: user_id },
+        });
+        const data = response.data.data;
+        setInvestment(data.overallInvestment);
+        setReturns(data.overallReturns);
+      } catch (error) {
+        console.error('Error fetching speedometer data:', error);
+      }
+    };
+
+    fetchSpeedometerData();
+  }, []);
 
   const COLORS = ['#0088FE', '#FF8042'];
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.2,
+        duration: 0.6,
+        type: 'spring',
+      },
+    }),
+  };
+
   return (
     <div className="h-full w-full bg-gray-50 flex items-center justify-center min-h-screen">
-      <div className="bg-white rounded-lg shadow-md p-8 w-11/12 max-w-7xl">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Dashboard</h1>
+      <motion.div
+        className="bg-white rounded-lg shadow-md p-8 w-11/12 max-w-7xl"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <motion.h1
+          className="text-3xl font-bold text-gray-800 mb-8"
+          initial={{ x: -100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.6 }}
+        >
+          Dashboard
+        </motion.h1>
 
-        {/* 2x2 Chart Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">         
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Pie Chart */}
-          <div className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col">
-            <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2 px-4">Profit & Loss</h2>
+          <motion.div
+            className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col"
+            custom={0}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2 px-4">Gain vs Investment</h2>
             <div className="flex-grow px-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius="80%"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              {pieData.length === 0 ? (
+                <p className="text-center text-gray-500">No data available for the pie chart.</p>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius="80%"
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
             </div>
-          </div>
+          </motion.div>
 
           {/* Bar Chart */}
-          <div className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col">
-            <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2 px-4">User Performance</h2>
-            <div className="flex-grow px-4">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barData}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="performance" fill="#82ca9d" />
-                </BarChart>
-              </ResponsiveContainer>
+          <motion.div
+            className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col"
+            custom={1}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <div className="flex justify-between items-center px-4 mt-4">
+              <h2 className="text-lg font-semibold text-gray-700">User Performance</h2>
+              <select
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+                className="border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="1d">1 Day</option>
+                <option value="1w">1 Week</option>
+                <option value="1m">1 Month</option>
+                <option value="1y">1 Year</option>
+              </select>
             </div>
-          </div>
+            <div className="flex-grow px-4 overflow-x-auto">
+              {barData.length === 0 ? (
+                <p className="text-center text-gray-500">No data available for the bar chart.</p>
+              ) : (
+                <div style={{ width: `${barData.length * 100}px`, height: '100%' }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={barData}>
+                      <XAxis dataKey="name" tick={false} />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="performance" name="Performance">
+                        {barData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={entry.performance >= 0 ? '#82ca9d' : '#FF4D4D'}
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </div>
+          </motion.div>
 
           {/* Speedometer Chart 1 */}
-          <div className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col items-center justify-center">
-            <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Performance Indicator 1</h2>
+          <motion.div
+            className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col items-center justify-center"
+            custom={2}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Investment Indicator</h2>
             <Speedometer
-              maxValue={1000}
-              value={750}
+              maxValue={1000000}
+              value={investment}
               needleColor="red"
               startColor="green"
               endColor="red"
-              segments={10}
+              segments={5}
+              customSegmentLabels={[
+                { text: '0', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '2L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '5L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '7L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '10L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+              ]}
               width={250}
               height={160}
             />
-          </div>
+          </motion.div>
 
           {/* Speedometer Chart 2 */}
-          <div className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col items-center justify-center">
-            <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Performance Indicator 2</h2>
+          <motion.div
+            className="bg-gray-100 p-0 m-0 rounded-lg shadow-inner h-80 flex flex-col items-center justify-center"
+            custom={3}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Returns Indicator</h2>
             <Speedometer
-              maxValue={1000}
-              value={450}
+              maxValue={1000000}
+              value={returns}
               needleColor="blue"
               startColor="green"
               endColor="orange"
-              segments={10}
+              segments={5}
+              customSegmentLabels={[
+                { text: '0', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '2L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '5L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '7L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '10L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+              ]}
               width={250}
               height={160}
             />
-          </div>
-
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
