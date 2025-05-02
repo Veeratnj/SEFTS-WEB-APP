@@ -20,7 +20,9 @@ const Home = () => {
   const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-  const COLORS = ['#0088FE', '#FF8042'];
+  // const COLORS = ['#0088FE', '#FF8042'];
+  const COLORS = ['#32CD32', '#FF4500']; // Green and Red colors
+
 
   const cardVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -41,10 +43,20 @@ const Home = () => {
         params: { user_id, filter: pieChartfilter },
       });
       const data = response.data.data;
+      console.log('Pie Chart Data:', data);
       const chartData = [
-        { name: 'Gain', value: data.profit },
-        { name: 'Investment', value: data.total_investment },
+        { name: 'Profit', value: data.profit_percentage },
+        { name: 'Loss', value: data.loss_percentage },
       ];
+      // const investmentInLakh = (data.total_investment / 100000);
+      // const profitPerLakhPercentage = (data.profit / investmentInLakh); // in %
+
+      // const chartData = [
+      //   { name: 'Gain (per lakh)', value: profitPerLakhPercentage },
+      //   { name: 'Investment', value: 100 },
+      // ];
+
+      console.log('Pie Chart Data:', chartData);
       setPieData(chartData);
     } catch (error) {
       console.error('Error fetching pie chart data:', error);
@@ -134,7 +146,7 @@ const Home = () => {
             animate="visible"
           >
             <div className="flex justify-between items-center px-4 mt-4">
-              <h2 className="text-lg font-semibold text-gray-700">Gain vs Investment</h2>
+              <h2 className="text-lg font-semibold text-gray-700">Profit vs loss</h2>
               <select
                 value={pieChartfilter}
                 onChange={(e) => setpieChartfilter(e.target.value)}

@@ -13,11 +13,14 @@ type Trade = {
 };
 
 export default function TradeHistory() {
-  const [trades, setTrades] = useState<Trade[]>([]);
+  const [originalTrades, setOriginalTrades] = useState<Trade[]>([]); // Store original data
+  const [trades, setTrades] = useState<Trade[]>([]); // Store filtered data
   const [tradeTypeFilter, setTradeTypeFilter] = useState('');
   const [dateFilter, setDateFilter] = useState<'1D' | '1W' | '1M' | '1Y' | 'ALL'>('ALL');
   const [sortField, setSortField] = useState<'entry' | 'exit' | 'date'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [fromDate, setFromDate] = useState<Date | null>(null);
+  const [toDate, setToDate] = useState<Date | null>(null);
 
   useEffect(() => {
     const userData = localStorage.getItem('userData');
@@ -38,10 +41,26 @@ export default function TradeHistory() {
           date: new Date(item.trade_entry_time).toISOString().split('T')[0],
         }));
 
-        setTrades(formattedTrades);
+        setOriginalTrades(formattedTrades); // Save original data
+        setTrades(formattedTrades); // Initialize filtered data
       })
       .catch(err => console.error('Error fetching trade history:', err));
   }, []);
+
+  useEffect(() => {
+    if (fromDate && toDate) {
+      const filteredByDateRange = originalTrades.filter(trade => {
+        const tradeDate = trade.date; // Already normalized to YYYY-MM-DD during formatting
+        const from = fromDate.toISOString().split('T')[0]; // Normalize fromDate to YYYY-MM-DD
+        const to = toDate.toISOString().split('T')[0]; // Normalize toDate to YYYY-MM-DD
+
+        return tradeDate >= from && tradeDate <= to; // Compare normalized dates
+      });
+      setTrades(filteredByDateRange);
+    } else {
+      setTrades(originalTrades); // Reset to original data if no date range is selected
+    }
+  }, [fromDate, toDate, originalTrades]);
 
   const filterByDate = (trades: Trade[]) => {
     const now = new Date();
@@ -94,6 +113,22 @@ export default function TradeHistory() {
               {label}
             </button>
           ))}
+          <div className="flex flex-wrap gap-2 items-center">
+            <label className="text-sm text-gray-700">From:</label>
+            <input
+              type="date"
+              value={fromDate ? fromDate.toISOString().split('T')[0] : ''}
+              onChange={e => setFromDate(e.target.value ? new Date(e.target.value) : null)}
+              className="px-3 py-1 rounded-lg border border-gray-300 text-sm"
+            />
+            <label className="text-sm text-gray-700">To:</label>
+            <input
+              type="date"
+              value={toDate ? toDate.toISOString().split('T')[0] : ''}
+              onChange={e => setToDate(e.target.value ? new Date(e.target.value) : null)}
+              className="px-3 py-1 rounded-lg border border-gray-300 text-sm"
+            />
+          </div>
         </div>
         <div className="text-right font-semibold text-base text-gray-800">
           Total P&L:{' '}
