@@ -50,6 +50,7 @@ const SidebarComponent: React.FC = () => {
         if (Array.isArray(nseData.data)) {
           setNseStocks(nseData.data);
         }
+        setNseFavs(nseData.data.map((stock: { name: any }) => stock.name));
 
         if (Array.isArray(optionsData.data)) {
           setOptionsStocks(optionsData.data);
@@ -62,13 +63,13 @@ const SidebarComponent: React.FC = () => {
     fetchData();
   }, []);
 
-  const [selectedTab, setSelectedTab] = useState<'NSE' | 'Options'>('NSE');
+  const [selectedTab, setSelectedTab] = useState<'NSE Hot list' | 'Options'>('NSE Hot list');
   const [searchTerm, setSearchTerm] = useState('');
   const [nseFavs, setNseFavs] = useState<string[]>([]);
   const [optionFavs, setOptionFavs] = useState<string[]>([]);
-  const stocks = selectedTab === 'NSE' ? nseStocks : optionsStocks;
-  const favs = selectedTab === 'NSE' ? nseFavs : optionFavs;
-  const setFavs = selectedTab === 'NSE' ? setNseFavs : setOptionFavs;
+  const stocks = selectedTab === 'NSE Hot list' ? nseStocks : optionsStocks;
+  const favs = selectedTab === 'NSE Hot list' ? nseFavs : optionFavs;
+  const setFavs = selectedTab === 'NSE Hot list' ? setNseFavs : setOptionFavs;
 
   const filteredStocks = searchTerm
     ? stocks.filter(stock =>
@@ -94,7 +95,8 @@ const SidebarComponent: React.FC = () => {
     ) : (
       <FaArrowDown className="text-red-500 text-xs ml-1" />
     );
-
+    const disableOptionsButton = true;
+    const disableRemovesButton = true;
   return (
     <div className="bg-gradient-to-b from-blue-50 to-white rounded-2xl shadow-lg p-6 h-full flex flex-col">
       {/* Company Name */}
@@ -105,24 +107,27 @@ const SidebarComponent: React.FC = () => {
       </div>
 
       {/* Tab buttons */}
-      <div className="flex justify-center space-x-4 mb-4">
-        {['NSE', 'Options'].map(tab => (
-          <button
-            key={tab}
-            onClick={() => {
-              setSelectedTab(tab as 'NSE' | 'Options');
+      <div className="flex justify-center space-x-4 mb-4 ">
+      {['NSE Hot list', 'Options'].map(tab => (
+        <button
+          key={tab}
+          onClick={() => {
+            if (tab !== 'Options' || !disableOptionsButton) {
+              setSelectedTab(tab as 'NSE Hot list' | 'Options');
               setSearchTerm('');
-            }}
-            className={`px-5 py-2 rounded-full font-semibold text-sm shadow ${
-              selectedTab === tab
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700'
-            } transition duration-300`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+            }
+          }}
+          className={`px-5 py-2 rounded-full font-semibold text-sm shadow cursor-pointer ${
+            selectedTab === tab
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-200 text-gray-700'
+          } transition duration-300`}
+          disabled={tab === 'Options' && disableOptionsButton}
+        >
+          {tab}
+        </button>
+      ))}
+    </div>
 
       {/* Search bar */}
       <div className="relative mb-4">
@@ -155,14 +160,15 @@ const SidebarComponent: React.FC = () => {
                 </div>
                 {favs.includes(stock.name) ? (
                   <button
-                    className="text-red-500 text-xs"
+                    className="text-red-500 text-xs cursor-pointer"
                     onClick={() => handleRemoveFav(stock.name)}
+                    
                   >
                     Remove
                   </button>
                 ) : (
                   <button
-                    className="text-blue-500 text-xs"
+                    className="text-blue-500 text-xs cursor-pointer"
                     onClick={() => handleAddFav(stock.name)}
                   >
                     Add
@@ -176,49 +182,55 @@ const SidebarComponent: React.FC = () => {
 
       {/* Favorite Stocks */}
       {favs.length > 0 && (
-        <div className="flex-1 overflow-auto mt-4">
-          <h4 className="text-md font-semibold text-blue-800 mb-2">Favorite {selectedTab} Stocks</h4>
-          <ul className="space-y-3">
-            {favs.map(favName => {
-              const stock = stocks.find(s => s.name === favName);
-              if (!stock) return null;
-              return (
-                <li
-                  key={favName}
-                  className="flex justify-between items-center px-4 py-2 bg-blue-50 rounded-lg"
-                >
-                  <div className="flex items-center space-x-2">
-                    <span className="font-semibold">{stock.name}</span>
-                    <span
-                      className={`text-sm flex items-center ${
-                        stock.points >= 0 ? 'text-green-600' : 'text-red-600'
-                      }`}
-                    >
-                      {stock.points.toFixed(2)} {getArrowIcon(stock.points)}
-                      <span className="ml-1">({stock.percentage?.toFixed(2)}%)</span>
-                    </span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full"
-                      onClick={() => handleRemoveFav(stock.name)}
-                    >
-                      Remove
-                    </button>
-                    <button
-                      className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-full"
-                      onClick={() => handleTradeClick(stock)}
-                    >
-                      Trade
-                    </button>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+        <div className="mt-4">
+          <h4 className="text-md font-semibold text-blue-800 mb-2">
+            Favorite {selectedTab} Stocks
+          </h4>
+          <div className="overflow-y-auto pr-2 max-h-[calc(100vh-300px)]">
+            <ul className="space-y-3">
+              {favs.map(favName => {
+                const stock = stocks.find(s => s.name === favName);
+                if (!stock) return null;
+                return (
+                  <li
+                    key={favName}
+                    className="flex justify-between items-center px-4 py-2 bg-blue-50 rounded-lg"
+                  >
+                    <div className="flex items-center space-x-2">
+                      <span className="font-semibold">{stock.name}</span>
+                      <span
+                        className={`text-sm flex items-center ${
+                          stock.points >= 0 ? 'text-green-600' : 'text-red-600'
+                        }`}
+                      >
+                        {stock.points.toFixed(2)} {getArrowIcon(stock.points)}
+                        <span className="ml-1">
+                          ({stock.percentage?.toFixed(2)}%)
+                        </span>
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full cursor-pointer"
+                        // onClick={() => handleRemoveFav(stock.name)}
+                      >
+                        Remove
+                      </button>
+                      <button
+                        className="bg-green-500 hover:bg-green-600 text-white text-xs px-3 py-1 rounded-full cursor-pointer"
+                        onClick={() => handleTradeClick(stock)}
+                      >
+                        Trade
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
       )}
-      
+
       {selectedStock && (
         <TradeModal
           stock={selectedStock}

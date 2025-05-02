@@ -26,7 +26,7 @@ const Order = () => {
   return (
     <div className="h-full w-full bg-gray-100 flex items-center justify-center">
       <div className="bg-white rounded-xl shadow-lg p-6 w-full h-full">
-        <OrderTopCard />
+        {/* <OrderTopCard /> */}
 
         {/* Navbar */}
         <div className="flex space-x-4 border-b mb-6">
