@@ -8,11 +8,11 @@ interface ClosedOrderDataType {
   stockName: string;
   orderType: 'Buy' | 'Sell';
   qty: number;
-  atp: number;
+  // atp: number;
   ltp: number;
   totalProfit: number;
-  sl: number;
-  tg: number;
+  // sl: number;
+  // tg: number;
 }
 
 const columns: TableProps<ClosedOrderDataType>['columns'] = [
@@ -37,11 +37,11 @@ const columns: TableProps<ClosedOrderDataType>['columns'] = [
     dataIndex: 'qty',
     key: 'qty',
   },
-  {
-    title: 'ATP',
-    dataIndex: 'atp',
-    key: 'atp',
-  },
+  // {
+  //   title: 'ATP',
+  //   dataIndex: 'atp',
+  //   key: 'atp',
+  // },
   {
     title: 'LTP',
     dataIndex: 'ltp',
@@ -57,16 +57,16 @@ const columns: TableProps<ClosedOrderDataType>['columns'] = [
       </span>
     ),
   },
-  {
-    title: 'SL',
-    dataIndex: 'sl',
-    key: 'sl',
-  },
-  {
-    title: 'TG',
-    dataIndex: 'tg',
-    key: 'tg',
-  },
+  // {
+  //   title: 'SL',
+  //   dataIndex: 'sl',
+  //   key: 'sl',
+  // },
+  // {
+  //   title: 'TG',
+  //   dataIndex: 'tg',
+  //   key: 'tg',
+  // },
 ];
 
 const ClosedOrders: React.FC = () => {
@@ -86,11 +86,11 @@ const ClosedOrders: React.FC = () => {
           stockName: item.stockName,
           orderType: item.orderType.charAt(0).toUpperCase() + item.orderType.slice(1).toLowerCase(),
           qty: item.qty,
-          atp: item.atp,
+          // atp: item.atp,
           ltp: item.ltp,
           totalProfit: item.gainLoss ?? 0, // mapping gainLoss -> totalProfit (handle null)
-          sl: item.sl ?? 0,
-          tg: item.tg ?? 0,
+          // sl: item.sl ?? 0,
+          // tg: item.tg ?? 0,
         }));
         setData(fetchedData);
       } else {

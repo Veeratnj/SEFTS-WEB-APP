@@ -8,11 +8,11 @@ interface PendingOrderDataType {
   stockName: string;
   orderType: 'Buy' | 'Sell';
   qty: number;
-  atp: number;
+  // atp: number;
   ltp: number;
   gainLoss: number;
-  sl: number;
-  tg: number;
+  // sl: number;
+  // tg: number;
 }
 
 const columns: TableProps<PendingOrderDataType>['columns'] = [
@@ -37,11 +37,11 @@ const columns: TableProps<PendingOrderDataType>['columns'] = [
     dataIndex: 'qty',
     key: 'qty',
   },
-  {
-    title: 'ATP',
-    dataIndex: 'atp',
-    key: 'atp',
-  },
+  // {
+  //   title: 'ATP',
+  //   dataIndex: 'atp',
+  //   key: 'atp',
+  // },
   {
     title: 'LTP',
     dataIndex: 'ltp',
@@ -57,16 +57,16 @@ const columns: TableProps<PendingOrderDataType>['columns'] = [
       </span>
     ),
   },
-  {
-    title: 'SL',
-    dataIndex: 'sl',
-    key: 'sl',
-  },
-  {
-    title: 'TG',
-    dataIndex: 'tg',
-    key: 'tg',
-  },
+  // {
+  //   title: 'SL',
+  //   dataIndex: 'sl',
+  //   key: 'sl',
+  // },
+  // {
+  //   title: 'TG',
+  //   dataIndex: 'tg',
+  //   key: 'tg',
+  // },
   {
     title: 'Action',
     key: 'action',
@@ -117,11 +117,11 @@ const PendingOrders: React.FC = () => {
           stockName: item.stockName || 'N/A',
           orderType: item.orderType || 'Buy',
           qty: item.qty || 0,
-          atp: item.atp || 0,
+          // atp: item.atp || 0,
           ltp: item.ltp || 0,
           gainLoss: item.gainLoss || 0,
-          sl: item.sl || 0,
-          tg: item.tg || 0,
+          // sl: item.sl || 0,
+          // tg: item.tg || 0,
         }));
 
         setData(apiData);

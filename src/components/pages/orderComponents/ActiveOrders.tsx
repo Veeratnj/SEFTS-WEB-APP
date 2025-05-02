@@ -8,11 +8,11 @@ interface OrderDataType {
   stockName: string;
   orderType: 'Buy' | 'Sell';
   qty: number;
-  atp: number;
+  // atp: number;
   ltp: number;
   gainLoss: string | null;
-  sl: number | null;
-  tg: number | null;
+  // sl: number | null;
+  // tg: number | null;
 }
 
 const columns: TableProps<OrderDataType>['columns'] = [
@@ -37,11 +37,11 @@ const columns: TableProps<OrderDataType>['columns'] = [
     dataIndex: 'qty',
     key: 'qty',
   },
-  {
-    title: 'ATP',
-    dataIndex: 'atp',
-    key: 'atp',
-  },
+  // {
+  //   title: 'ATP',
+  //   dataIndex: 'atp',
+  //   key: 'atp',
+  // },
   {
     title: 'LTP',
     dataIndex: 'ltp',
@@ -63,18 +63,18 @@ const columns: TableProps<OrderDataType>['columns'] = [
       );
     },
   },
-  {
-    title: 'SL',
-    dataIndex: 'sl',
-    key: 'sl',
-    render: (sl) => (sl !== null ? sl : '-'),
-  },
-  {
-    title: 'TG',
-    dataIndex: 'tg',
-    key: 'tg',
-    render: (tg) => (tg !== null ? tg : '-'),
-  },
+  // {
+  //   title: 'SL',
+  //   dataIndex: 'sl',
+  //   key: 'sl',
+  //   render: (sl) => (sl !== null ? sl : '-'),
+  // },
+  // {
+  //   title: 'TG',
+  //   dataIndex: 'tg',
+  //   key: 'tg',
+  //   render: (tg) => (tg !== null ? tg : '-'),
+  // },
 ];
 
 const ActiveOrders: React.FC = () => {
@@ -99,11 +99,11 @@ const ActiveOrders: React.FC = () => {
           stockName: item.stockName,
           orderType: item.orderType.charAt(0).toUpperCase() + item.orderType.slice(1).toLowerCase(), // 'buy' -> 'Buy'
           qty: item.qty,
-          atp: item.atp,
+          // atp: item.atp,
           ltp: item.ltp,
           gainLoss: item.gainLoss,
-          sl: item.sl,
-          tg: item.tg,
+          // sl: item.sl,
+          // tg: item.tg,
         }));
         setData(formattedData);
       } else {
