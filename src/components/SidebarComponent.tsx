@@ -39,6 +39,10 @@ const SidebarComponent: React.FC = () => {
 
     setIsModalOpen(true);
   };
+  const userData = localStorage.getItem('userData');
+  const { role } = userData ? JSON.parse(userData) : { role: null };
+
+  const is_admin = role === 'admin'? true : false;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -130,6 +134,7 @@ const SidebarComponent: React.FC = () => {
     </div>
 
       {/* Search bar */}
+      {is_admin && 
       <div className="relative mb-4">
         <input
           type="text"
@@ -178,7 +183,7 @@ const SidebarComponent: React.FC = () => {
             ))}
           </div>
         )}
-      </div>
+      </div>}
 
       {/* Favorite Stocks */}
       {favs.length > 0 && (
@@ -209,10 +214,10 @@ const SidebarComponent: React.FC = () => {
                         </span>
                       </span>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    {is_admin && <div className="flex items-center space-x-2">
                       <button
                         className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full cursor-pointer"
-                        // onClick={() => handleRemoveFav(stock.name)}
+                        onClick={() => handleRemoveFav(stock.name)}
                       >
                         Remove
                       </button>
@@ -222,7 +227,7 @@ const SidebarComponent: React.FC = () => {
                       >
                         Trade
                       </button>
-                    </div>
+                    </div>}
                   </li>
                 );
               })}

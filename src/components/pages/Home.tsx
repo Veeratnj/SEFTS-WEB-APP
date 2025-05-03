@@ -84,7 +84,8 @@ const Home = () => {
       const response = await axios.get(`${baseUrl}/portfolios/get/speedometer/details`, {
         params: { user_id, filter: investmentSMFilter },
       });
-      setInvestment(response.data.data.overallInvestment);
+      setInvestment(response.data.data.total_loss);
+      // setInvestment(9999999);
     } catch (error) {
       console.error('Error fetching investment data:', error);
     }
@@ -95,7 +96,7 @@ const Home = () => {
       const response = await axios.get(`${baseUrl}/portfolios/get/speedometer/details`, {
         params: { user_id, filter: returnsSMFilter },
       });
-      setReturns(response.data.data.overallReturns);
+      setReturns(response.data.data.total_profit);
     } catch (error) {
       console.error('Error fetching returns data:', error);
     }
@@ -176,6 +177,7 @@ const Home = () => {
                       ))}
                     </Pie>
                     <Tooltip />
+                    <Legend layout="horizontal" verticalAlign="bottom" align="center" />
                   </PieChart>
                 </ResponsiveContainer>
               )}
@@ -249,18 +251,18 @@ const Home = () => {
               </select>
             </div>
             <Speedometer
-              maxValue={1000000}
+              maxValue={100000}
               value={investment}
               needleColor="red"
               startColor="green"
               endColor="red"
               segments={5}
               customSegmentLabels={[
-                { text: '0', position: CustomSegmentLabelPosition.Inside, color: '#555' },
-                { text: '2L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
-                { text: '5L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
-                { text: '7L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
-                { text: '10L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '', position: CustomSegmentLabelPosition.Inside, color: '#555' },
               ]}
               width={250}
               height={160}
@@ -288,18 +290,18 @@ const Home = () => {
               </select>
             </div>
             <Speedometer
-              maxValue={1000000}
+              maxValue={100000}
               value={returns}
               needleColor="blue"
               startColor="green"
               endColor="orange"
               segments={5}
               customSegmentLabels={[
-                { text: '0', position: CustomSegmentLabelPosition.Inside, color: '#555' },
-                { text: '2L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
-                { text: '5L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
-                { text: '7L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
-                { text: '10L', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '', position: CustomSegmentLabelPosition.Inside, color: '#555' },
+                { text: '', position: CustomSegmentLabelPosition.Inside, color: '#555' },
               ]}
               width={250}
               height={160}
