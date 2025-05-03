@@ -239,7 +239,7 @@ const Home = () => {
             animate="visible"
           >
             <div className="flex justify-between w-full px-6">
-              <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Investment Indicator</h2>
+              <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Loss Monitor</h2>
               <select
                 value={investmentSMFilter}
                 onChange={(e) => setinvestmentSMFilter(e.target.value)}
@@ -278,7 +278,7 @@ const Home = () => {
             animate="visible"
           >
             <div className="flex justify-between w-full px-6">
-              <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Returns Indicator</h2>
+              <h2 className="text-lg font-semibold text-gray-700 mt-4 mb-2">Profit Monitor</h2>
               <select
                 value={returnsSMFilter}
                 onChange={(e) => setreturnsSMFilter(e.target.value)}
