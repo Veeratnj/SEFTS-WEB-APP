@@ -237,7 +237,7 @@ const SidebarComponent: React.FC = () => {
                         <img
                           src={stock.trend_type === 'bearish' ? bearIcon : bullIcon}
                           alt="Bear Icon"
-                          className="w-6 h-6"
+                          className="w-20 h-20"
                         />
                         <button
                           className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full cursor-pointer"
