@@ -129,14 +129,14 @@ const Market: React.FC = () => {
             <p className="text-gray-600 mb-6">
               To access this feature, you need an active subscription. For more information, please contact our support team.
             </p>
-            {/* <button
+            <button
               onClick={() => window.location.href = 'mailto:support@example.com'}
               className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
             >
               Contact Support
-            </button> */}
+            </button>
             <button
-              onClick={() => setIsModalOpen(false)} // Close modal on click
+              onClick={() => setIsModalOpen(true)} // Close modal on click
               className="mt-4 px-6 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition"
             >
               Close

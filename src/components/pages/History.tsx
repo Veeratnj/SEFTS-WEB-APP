@@ -139,61 +139,66 @@ export default function TradeHistory() {
       </div>
 
       {/* Trade Table */}
-      <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200">
-        <table className="min-w-full text-sm border-t">
-          <caption className="caption-top text-lg font-semibold text-gray-800 p-4 bg-gray-100">
-            Trade History
-          </caption>
+      
+{/* Trade Table */}
+<div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 flex-grow">
+  <div className="overflow-x-auto h-[calc(100vh-200px)]"> {/* Dynamically adjust height */}
+    <table className="min-w-full text-sm border-t">
+      <caption className="caption-top text-lg font-semibold text-gray-800 p-4 bg-gray-100">
+        Trade History
+      </caption>
 
-          <motion.thead
-            className="bg-indigo-600 text-white sticky top-0 z-10"
-            initial={{ y: -20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-          >
-            <tr>
-              <th className="px-6 py-3 text-left">Stock</th>
-              <th className="px-6 py-3 text-left">Type</th>
-              <th className="px-6 py-3 text-left">Entry</th>
-              <th className="px-6 py-3 text-left">Exit</th>
-              <th className="px-6 py-3 text-left">Qty</th>
-              <th className="px-6 py-3 text-left">P&L</th>
-              <th className="px-6 py-3 text-left">Date</th>
+      <motion.thead
+        className="bg-indigo-600 text-white sticky top-0 z-10"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4, ease: 'easeOut' }}
+      >
+        <tr>
+          <th className="px-6 py-3 text-left">Stock</th>
+          <th className="px-6 py-3 text-left">Type</th>
+          <th className="px-6 py-3 text-left">Entry</th>
+          <th className="px-6 py-3 text-left">Exit</th>
+          <th className="px-6 py-3 text-left">Qty</th>
+          <th className="px-6 py-3 text-left">P&L</th>
+          <th className="px-6 py-3 text-left">Date</th>
+        </tr>
+      </motion.thead>
+
+      <tbody>
+        {sortedTrades.length > 0 ? (
+          sortedTrades.map((trade, idx) => (
+            <tr
+              key={idx}
+              className="transition-all border-b even:bg-gradient-to-r even:from-gray-50 even:to-white hover:bg-indigo-100"
+            >
+              <td className="px-6 py-4 whitespace-nowrap">{trade.stock}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{trade.type}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{trade.entry}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{trade.exit}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{trade.qty}</td>
+              <td
+                className={`px-6 py-4 whitespace-nowrap font-semibold ${
+                  trade.pnl >= 0 ? 'text-green-600' : 'text-red-500'
+                }`}
+              >
+                {trade.pnl}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">{trade.date}</td>
             </tr>
-          </motion.thead>
-
-          <tbody>
-            {sortedTrades.length > 0 ? (
-              sortedTrades.map((trade, idx) => (
-                <tr
-                  key={idx}
-                  className="transition-all border-b even:bg-gradient-to-r even:from-gray-50 even:to-white hover:bg-indigo-100"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">{trade.stock}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{trade.type}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{trade.entry}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{trade.exit}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">{trade.qty}</td>
-                  <td
-                    className={`px-6 py-4 whitespace-nowrap font-semibold ${
-                      trade.pnl >= 0 ? 'text-green-600' : 'text-red-500'
-                    }`}
-                  >
-                    {trade.pnl}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">{trade.date}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={7} className="text-center px-6 py-6 text-gray-400 italic">
-                  No matching trade records.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          ))
+        ) : (
+          <tr>
+            <td colSpan={7} className="text-center px-6 py-6 text-gray-400 italic">
+              No matching trade records.
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
+...
     </div>
   );
 }
