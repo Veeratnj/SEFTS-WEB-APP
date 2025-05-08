@@ -8,11 +8,11 @@ interface ClosedOrderDataType {
   stockName: string;
   orderType: 'Buy' | 'Sell';
   qty: number;
-  // atp: number;
-  ltp: number;
+  entryLtp: number | null;
+  exitLtp: number | null;
+  entryTime: string | null;
+  exitTime: string | null;
   totalProfit: number;
-  // sl: number;
-  // tg: number;
 }
 
 const columns: TableProps<ClosedOrderDataType>['columns'] = [
@@ -37,15 +37,25 @@ const columns: TableProps<ClosedOrderDataType>['columns'] = [
     dataIndex: 'qty',
     key: 'qty',
   },
-  // {
-  //   title: 'ATP',
-  //   dataIndex: 'atp',
-  //   key: 'atp',
-  // },
   {
-    title: 'LTP',
-    dataIndex: 'ltp',
-    key: 'ltp',
+    title: 'Entry LTP',
+    dataIndex: 'entryLtp',
+    key: 'entryLtp',
+  },
+  {
+    title: 'Exit LTP',
+    dataIndex: 'exitLtp',
+    key: 'exitLtp',
+  },
+  {
+    title: 'Entry Time',
+    dataIndex: 'entryTime',
+    key: 'entryTime',
+  },
+  {
+    title: 'Exit Time',
+    dataIndex: 'exitTime',
+    key: 'exitTime',
   },
   {
     title: 'Total Profit',
@@ -57,16 +67,6 @@ const columns: TableProps<ClosedOrderDataType>['columns'] = [
       </span>
     ),
   },
-  // {
-  //   title: 'SL',
-  //   dataIndex: 'sl',
-  //   key: 'sl',
-  // },
-  // {
-  //   title: 'TG',
-  //   dataIndex: 'tg',
-  //   key: 'tg',
-  // },
 ];
 
 const ClosedOrders: React.FC = () => {
@@ -86,11 +86,11 @@ const ClosedOrders: React.FC = () => {
           stockName: item.stockName,
           orderType: item.orderType.charAt(0).toUpperCase() + item.orderType.slice(1).toLowerCase(),
           qty: item.qty,
-          // atp: item.atp,
-          ltp: item.ltp,
-          totalProfit: item.gainLoss ?? 0, // mapping gainLoss -> totalProfit (handle null)
-          // sl: item.sl ?? 0,
-          // tg: item.tg ?? 0,
+          entryLtp: item.entry_ltp ?? null,
+          exitLtp: item.exit_ltp ?? null,
+          entryTime: item.entry_time ?? null,
+          exitTime: item.exit_time ?? null,
+          totalProfit: item.gainLoss ?? 0,
         }));
         setData(fetchedData);
       } else {

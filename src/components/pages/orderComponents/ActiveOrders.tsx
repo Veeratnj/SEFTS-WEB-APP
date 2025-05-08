@@ -8,11 +8,9 @@ interface OrderDataType {
   stockName: string;
   orderType: 'Buy' | 'Sell';
   qty: number;
-  // atp: number;
+  entryLtp: number | null;
   ltp: number;
   gainLoss: string | null;
-  // sl: number | null;
-  // tg: number | null;
 }
 
 const columns: TableProps<OrderDataType>['columns'] = [
@@ -37,44 +35,36 @@ const columns: TableProps<OrderDataType>['columns'] = [
     dataIndex: 'qty',
     key: 'qty',
   },
-  // {
-  //   title: 'ATP',
-  //   dataIndex: 'atp',
-  //   key: 'atp',
-  // },
+  {
+    title: 'Entry LTP',
+    dataIndex: 'entryLtp',
+    key: 'entryLtp',
+    render: (entryLtp: number | null) => (entryLtp !== null ? entryLtp : '-'),
+  },
   {
     title: 'LTP',
     dataIndex: 'ltp',
     key: 'ltp',
   },
   {
-    title: 'Gain & Loss',
-    dataIndex: 'gainLoss',
-    key: 'gainLoss',
-    render: (gainLoss) => {
-      if (gainLoss === null) {
-        return '-';
-      }
-      const isPositive = gainLoss.startsWith('+');
+    title: 'Total Profit',
+    key: 'totalProfit',
+    render: (_, record) => {
+      const { entryLtp, ltp, orderType } = record;
+      if (entryLtp === null) return '-';
+
+      const profit = orderType === 'Buy'
+        ? ltp - entryLtp
+        : entryLtp - ltp;
+
+      const isProfit = profit >= 0;
       return (
-        <span style={{ color: isPositive ? 'green' : 'red' }}>
-          {gainLoss}
+        <span style={{ color: isProfit ? 'green' : 'red' }}>
+          {isProfit ? `+${profit.toFixed(2)}` : profit.toFixed(2)}
         </span>
       );
     },
   },
-  // {
-  //   title: 'SL',
-  //   dataIndex: 'sl',
-  //   key: 'sl',
-  //   render: (sl) => (sl !== null ? sl : '-'),
-  // },
-  // {
-  //   title: 'TG',
-  //   dataIndex: 'tg',
-  //   key: 'tg',
-  //   render: (tg) => (tg !== null ? tg : '-'),
-  // },
 ];
 
 const ActiveOrders: React.FC = () => {
@@ -91,19 +81,16 @@ const ActiveOrders: React.FC = () => {
       const userData = localStorage.getItem('userData');
       const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
       const baseUrl = import.meta.env.VITE_API_BASE_URL;
-      console.log('Base URL:', baseUrl);
       const response = await axios.get(`${baseUrl}/portfolios/get/active/orders?user_id=${user_id}`);
       if (response.data.status === 200) {
         const formattedData: OrderDataType[] = response.data.data.map((item: any) => ({
           key: item.key,
           stockName: item.stockName,
-          orderType: item.orderType.charAt(0).toUpperCase() + item.orderType.slice(1).toLowerCase(), // 'buy' -> 'Buy'
+          orderType: item.orderType.charAt(0).toUpperCase() + item.orderType.slice(1).toLowerCase(),
           qty: item.qty,
-          // atp: item.atp,
+          entryLtp: item.entry_ltp ?? null,
           ltp: item.ltp,
           gainLoss: item.gainLoss,
-          // sl: item.sl,
-          // tg: item.tg,
         }));
         setData(formattedData);
       } else {
@@ -115,16 +102,15 @@ const ActiveOrders: React.FC = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div>
-      <Table<OrderDataType> 
-        columns={columns} 
-        dataSource={data} 
-        loading={loading} 
-        pagination={false} 
-        scroll={{ x: true }} 
+      <Table<OrderDataType>
+        columns={columns}
+        dataSource={data}
+        loading={loading}
+        pagination={false}
+        scroll={{ x: true }}
       />
     </div>
   );
