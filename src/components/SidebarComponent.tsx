@@ -4,6 +4,7 @@ import get_api_call from '../services/GetAPI';
 import TradeModal from './TradeModal';
 import bearIcon from '../assets/bear-removebg-preview.png';
 import bullIcon from '../assets/bull-removebg-preview.png';
+import {  Splitter } from 'antd';
 
 const SidebarComponent: React.FC = () => {
   const [nseStocks, setNseStocks] = useState([
@@ -113,6 +114,7 @@ const SidebarComponent: React.FC = () => {
   const disableOptionsButton = true;
 
   return (
+    
     <div className="bg-gradient-to-b from-blue-50 to-white rounded-2xl shadow-lg p-6 h-full flex flex-col">
       {/* Company Name */}
       <div className="text-center mb-6">
@@ -269,6 +271,7 @@ const SidebarComponent: React.FC = () => {
         />
       )}
     </div>
+    
   );
 };
 

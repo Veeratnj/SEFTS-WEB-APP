@@ -10,6 +10,8 @@ type Trade = {
   qty: number;
   pnl: number;
   date: string;
+  entry_time?: string;
+  exit_time?: string; 
 };
 
 export default function TradeHistory() {
@@ -21,6 +23,17 @@ export default function TradeHistory() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
+
+  const formatTimestamp = (timestamp: string): string => {
+    const date = new Date(timestamp);
+    const formattedDate = date.toISOString().split('T')[0]; // Extract the date part (YYYY-MM-DD)
+    const formattedTime = date.toLocaleString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    }); // Format time as 09:27 AM
+    return `${formattedDate} ${formattedTime}`;
+  };
 
   useEffect(() => {
     const userData = localStorage.getItem('userData');
@@ -39,6 +52,8 @@ export default function TradeHistory() {
           qty: item.quantity,
           pnl: item.pnl,
           date: new Date(item.trade_entry_time).toISOString().split('T')[0],
+          entry_time: formatTimestamp(item.trade_entry_time),
+          exit_time: formatTimestamp(item.trade_exit_time),
         }));
 
         setOriginalTrades(formattedTrades); // Save original data
@@ -159,6 +174,8 @@ export default function TradeHistory() {
           <th className="px-6 py-3 text-left">Type</th>
           <th className="px-6 py-3 text-left">Entry</th>
           <th className="px-6 py-3 text-left">Exit</th>
+          <th className="px-6 py-3 text-left">Entry time</th>
+          <th className="px-6 py-3 text-left">Exit time</th>
           <th className="px-6 py-3 text-left">Qty</th>
           <th className="px-6 py-3 text-left">P&L</th>
           <th className="px-6 py-3 text-left">Date</th>
@@ -176,6 +193,8 @@ export default function TradeHistory() {
               <td className="px-6 py-4 whitespace-nowrap">{trade.type}</td>
               <td className="px-6 py-4 whitespace-nowrap">{trade.entry}</td>
               <td className="px-6 py-4 whitespace-nowrap">{trade.exit}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{trade.entry_time}</td>
+              <td className="px-6 py-4 whitespace-nowrap">{trade.exit_time}</td>
               <td className="px-6 py-4 whitespace-nowrap">{trade.qty}</td>
               <td
                 className={`px-6 py-4 whitespace-nowrap font-semibold ${

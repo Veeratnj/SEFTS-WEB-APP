@@ -28,6 +28,7 @@ const AuthenticatedLayout: React.FC = () => {
       {/* Main Content Area */}
       <div className="flex flex-1">
         {/* Left Sidebar */}
+        
         <div className="w-[40%] p-4">
           <SidebarComponent />
         </div>
