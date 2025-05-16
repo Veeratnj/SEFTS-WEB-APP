@@ -102,7 +102,8 @@ const Admin: React.FC = () => {
   // Fetch stocks data
   const fetchStocks = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/custom/admin/get/stocks");
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      const res = await axios.get(`${baseUrl}/custom/admin/get/stocks`);
       if (res.data.status === 200) {
         const dataWithKey = res.data.data.map((item: Stock, idx: number) => ({
           ...item,
@@ -118,7 +119,8 @@ const Admin: React.FC = () => {
   // Fetch stock details data
   const fetchStockDetails = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/custom/admin/get/stocks/details");
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
+      const res = await axios.get(`${baseUrl}/custom/admin/get/stocks/details`);
       if (res.data.status === 200) {
         const dataWithKey = res.data.data.map((item: StockDetail, idx: number) => ({
           ...item,
@@ -156,7 +158,8 @@ const Admin: React.FC = () => {
         setEditingKeyStock("");
 
         // Call POST API to update backend
-        await axios.post("http://localhost:8000/custom/admin/cud/stocks", updatedItem);
+        const baseUrl = import.meta.env.VITE_API_BASE_URL;
+        await axios.post(`${baseUrl}/custom/admin/cud/stocks`, updatedItem);
         message.success("Stock updated successfully");
       } else {
         message.error("Update failed: Item not found");
@@ -201,7 +204,8 @@ const Admin: React.FC = () => {
         setEditingKeyDetail("");
 
         // Call POST API to update backend
-        await axios.post("http://localhost:8000/custom/admin/cud/stocks/details", updatedItem);
+        const baseUrl = import.meta.env.VITE_API_BASE_URL;
+        await axios.post(`${baseUrl}/custom/admin/cud/stocks/details`, updatedItem);
         message.success("Stock detail updated successfully");
       } else {
         message.error("Update failed: Item not found");
