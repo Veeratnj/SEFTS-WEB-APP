@@ -1,0 +1,26 @@
+/* Make sure the container holding the table allows overflow only if necessary */
+.container {
+    overflow-x: auto; /* Scroll only if content overflows */
+  }
+  
+  /* Make table width 100% so it doesn’t exceed container */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto; /* Allows columns to size based on content */
+  }
+  
+  /* Allow table cells to wrap text */
+  th, td {
+    white-space: normal;  /* Allow line breaks */
+    word-wrap: break-word; /* Break long words if needed */
+    padding: 8px;
+    text-align: left;
+  }
+  
+  /* Optional: reduce padding or font size if needed */
+  /* th, td {
+    padding: 6px 4px;
+    font-size: 14px;
+  } */
+  

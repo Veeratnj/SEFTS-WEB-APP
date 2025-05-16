@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { Dropdown, Menu, Button } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
 import StockCard from './sub-components/StockCard';
 import logo from '../assets/logo.jpg';
 import '../css/HeaderComponent.css';
@@ -20,11 +22,22 @@ const HeaderComponents: React.FC = () => {
     { stock_name: 's3', points: 0, isUp: false, percentage: '' },
   ]);
 
+  const userData = localStorage.getItem('userData');
+  const { name } = userData ? JSON.parse(userData) : { name: 'User' };
+  const { role } = userData ? JSON.parse(userData) : { role: null };
+
+  const handleLogout = () => {
+    localStorage.removeItem('userData');
+    localStorage.setItem('isAuthenticated', 'false');
+    window.location.href = '/login';
+  };
+
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
     const url = `${baseUrl}/websocket/ws/stocks`;
     const userData = localStorage.getItem('userData');
     const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
+   
     const clientId = `${user_id}`;
     const tokens = ['99926000', '99926009', '99926037'];
 
@@ -57,6 +70,19 @@ const HeaderComponents: React.FC = () => {
     };
   }, []);
 
+  // Dropdown menu items
+  const menu = (
+    <Menu>
+      <Menu.Item key="1">
+        <p><strong>Name:</strong> {name}</p>
+      </Menu.Item>
+      <Menu.Divider />
+      <Menu.Item key="2" onClick={handleLogout}>
+        Logout
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <header className="header-wrapper">
       <div className="header-inner">
@@ -80,7 +106,7 @@ const HeaderComponents: React.FC = () => {
             </div>
           </div>
 
-          {/* Right container: Navigation links */}
+          {/* Right container: Navigation links + Profile */}
           <div className="right-container">
             <nav>
               <ul>
@@ -132,8 +158,21 @@ const HeaderComponents: React.FC = () => {
                     History
                   </NavLink>
                 </li>
+                { role ==='admin' && <li>
+                  <NavLink
+                    to="/admin"
+                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                  >
+                    Admin
+                  </NavLink>
+                </li>}
               </ul>
             </nav>
+
+            {/* Profile Dropdown */}
+            <Dropdown overlay={menu} placement="bottomRight" arrow>
+              <UserOutlined className="profile-icon" />
+            </Dropdown>
           </div>
         </div>
       </div>

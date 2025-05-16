@@ -11,6 +11,7 @@ import Broker from './components/pages/Brokers';
 import History from './components/pages/History';
 
 import Login from './components/pages/Login';
+import Admin from './components/pages/Admin';
 
 // PrivateRoute Component
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -43,6 +44,8 @@ const AuthenticatedLayout: React.FC = () => {
             <Route path="/tools" element={<Tools />} />
             <Route path="/history" element={<History  />} />
             <Route path="/home" element={<Navigate to="/" />} />
+            <Route path="/admin" element={<Admin  />} />
+            
           </Routes>
         </div>
       </div>
