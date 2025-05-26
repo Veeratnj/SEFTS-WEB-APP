@@ -8,11 +8,7 @@ interface PendingOrderDataType {
   stockName: string;
   orderType: 'Buy' | 'Sell';
   qty: number;
-  // atp: number;
   ltp: number;
-  gainLoss: number;
-  // sl: number;
-  // tg: number;
 }
 
 const columns: TableProps<PendingOrderDataType>['columns'] = [
@@ -37,42 +33,17 @@ const columns: TableProps<PendingOrderDataType>['columns'] = [
     dataIndex: 'qty',
     key: 'qty',
   },
-  // {
-  //   title: 'ATP',
-  //   dataIndex: 'atp',
-  //   key: 'atp',
-  // },
   {
     title: 'LTP',
     dataIndex: 'ltp',
     key: 'ltp',
   },
   {
-    title: 'Gain & Loss',
-    dataIndex: 'gainLoss',
-    key: 'gainLoss',
-    render: (gainLoss?: number) => (
-      <span style={{ color: gainLoss && gainLoss >= 0 ? 'green' : 'red' }}>
-        {gainLoss !== undefined ? (gainLoss >= 0 ? `+${gainLoss}` : gainLoss) : '--'}
-      </span>
-    ),
-  },
-  // {
-  //   title: 'SL',
-  //   dataIndex: 'sl',
-  //   key: 'sl',
-  // },
-  // {
-  //   title: 'TG',
-  //   dataIndex: 'tg',
-  //   key: 'tg',
-  // },
-  {
     title: 'Action',
     key: 'action',
     render: (_, record) => (
       <Space size="middle">
-        <Button type="primary" size="small">
+        <Button type="primary" size="small" disabled={true}>
           Closed
         </Button>
       </Space>
@@ -85,6 +56,8 @@ const PendingOrders: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    let intervalId: number;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -100,7 +73,6 @@ const PendingOrders: React.FC = () => {
         const user_id = parsedData.user_id;
         const baseUrl = import.meta.env.VITE_API_BASE_URL;
         const response = await axios.get(`${baseUrl}/portfolios/get/pending/orders?user_id=${user_id}`);
-        console.log('API Raw Response:', response.data);
 
         let pendingOrders: any[] = [];
 
@@ -117,11 +89,7 @@ const PendingOrders: React.FC = () => {
           stockName: item.stockName || 'N/A',
           orderType: item.orderType || 'Buy',
           qty: item.qty || 0,
-          // atp: item.atp || 0,
           ltp: item.ltp || 0,
-          gainLoss: item.gainLoss || 0,
-          // sl: item.sl || 0,
-          // tg: item.tg || 0,
         }));
 
         setData(apiData);
@@ -133,6 +101,11 @@ const PendingOrders: React.FC = () => {
     };
 
     fetchData();
+    intervalId = setInterval(fetchData, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   return (
@@ -140,7 +113,7 @@ const PendingOrders: React.FC = () => {
       <Table<PendingOrderDataType>
         columns={columns}
         dataSource={data}
-        loading={loading}
+        loading={false}
         pagination={false}
         scroll={{ x: true }}
       />

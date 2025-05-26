@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Tag } from 'antd';
 import type { TableProps } from 'antd';
 import axios from 'axios';
+import { FaSlidersH } from 'react-icons/fa';
 
 interface OrderDataType {
   key: number;
@@ -72,43 +73,50 @@ const ActiveOrders: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchOrders();
-  }, []);
+    let intervalId: ReturnType<typeof setInterval>;
 
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      const userData = localStorage.getItem('userData');
-      const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
-      const baseUrl = import.meta.env.VITE_API_BASE_URL;
-      const response = await axios.get(`${baseUrl}/portfolios/get/active/orders?user_id=${user_id}`);
-      if (response.data.status === 200) {
-        const formattedData: OrderDataType[] = response.data.data.map((item: any) => ({
-          key: item.key,
-          stockName: item.stockName,
-          orderType: item.orderType.charAt(0).toUpperCase() + item.orderType.slice(1).toLowerCase(),
-          qty: item.qty,
-          entryLtp: item.entry_ltp ?? null,
-          ltp: item.ltp,
-          gainLoss: item.gainLoss,
-        }));
-        setData(formattedData);
-      } else {
-        console.error('API error:', response.data.msg);
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const userData = localStorage.getItem('userData');
+        const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
+        const baseUrl = import.meta.env.VITE_API_BASE_URL;
+        const response = await axios.get(`${baseUrl}/portfolios/get/active/orders?user_id=${user_id}`);
+        if (response.data.status === 200) {
+          const formattedData: OrderDataType[] = response.data.data.map((item: any) => ({
+            key: item.key,
+            stockName: item.stockName,
+            orderType: item.orderType.charAt(0).toUpperCase() + item.orderType.slice(1).toLowerCase(),
+            qty: item.qty,
+            entryLtp: item.entry_ltp ?? null,
+            ltp: item.ltp,
+            gainLoss: item.gainLoss,
+          }));
+          setData(formattedData);
+        } else {
+          console.error('API error:', response.data.msg);
+        }
+      } catch (error) {
+        console.error('Fetch error:', error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Fetch error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+
+    fetchOrders();
+    intervalId = setInterval(fetchOrders, 5000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
 
   return (
     <div>
       <Table<OrderDataType>
         columns={columns}
         dataSource={data}
-        loading={loading}
+        loading={false}
         pagination={false}
         scroll={{ x: true }}
       />

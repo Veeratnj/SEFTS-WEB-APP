@@ -224,24 +224,25 @@ const SidebarComponent: React.FC = () => {
                   >
                     <div className="flex items-center space-x-2">
                       <span className="font-semibold">{stock.name}</span>
-                      <span
+                      {/* <span
                         className={`text-sm flex items-center ${
                           stock.points >= 0 ? 'text-green-600' : 'text-red-600'
                         }`}
                       >
                         {stock.points.toFixed(2)} {getArrowIcon(stock.points)}
                         <span className="ml-1">({stock.percentage?.toFixed(2)}%)</span>
-                      </span>
+                      </span> */}
                     </div>
 
-                    {is_admin && (
+                    {true && (
                       <div className="flex items-center space-x-2">
                         <img
                           src={stock.trend_type === 'bearish' ? bearIcon : bullIcon}
                           alt="Bear Icon"
                           className="w-20 h-20"
                         />
-                        <button
+
+                        {is_admin && (<><button
                           className="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1 rounded-full cursor-pointer"
                           onClick={() => handleRemoveFav(stock.name)}
                         >
@@ -252,7 +253,7 @@ const SidebarComponent: React.FC = () => {
                           onClick={() => handleTradeClick(stock)}
                         >
                           Trade
-                        </button>
+                        </button></>)}
                       </div>
                     )}
                   </li>
