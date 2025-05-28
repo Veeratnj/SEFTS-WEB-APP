@@ -104,7 +104,7 @@ const ActiveOrders: React.FC = () => {
     };
 
     fetchOrders();
-    intervalId = setInterval(fetchOrders, 5000);
+    intervalId = setInterval(fetchOrders, 1000);
 
     return () => {
       clearInterval(intervalId);

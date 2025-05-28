@@ -101,7 +101,7 @@ const PendingOrders: React.FC = () => {
     };
 
     fetchData();
-    intervalId = setInterval(fetchData, 5000);
+    intervalId = setInterval(fetchData, 1000);
 
     return () => {
       clearInterval(intervalId);
