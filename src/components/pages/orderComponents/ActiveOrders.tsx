@@ -51,17 +51,17 @@ const columns: TableProps<OrderDataType>['columns'] = [
     title: 'Total Profit',
     key: 'totalProfit',
     render: (_, record) => {
-      const { entryLtp, ltp, orderType } = record;
+      const { entryLtp, ltp, orderType,qty } = record;
       if (entryLtp === null) return '-';
 
       const profit = orderType === 'Buy'
-        ? ltp - entryLtp
-        : entryLtp - ltp;
+        ? (ltp*qty) - (entryLtp*qty)
+        : (entryLtp*qty) - (ltp*qty);
 
       const isProfit = profit >= 0;
       return (
         <span style={{ color: isProfit ? 'green' : 'red' }}>
-          {isProfit ? `+${profit.toFixed(2)}` : profit.toFixed(2)}
+          {isProfit ? `+${(profit * qty).toFixed(2)}` : (profit * qty).toFixed(2)}
         </span>
       );
     },
