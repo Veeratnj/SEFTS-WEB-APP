@@ -61,7 +61,7 @@ const columns: TableProps<OrderDataType>['columns'] = [
       const isProfit = profit >= 0;
       return (
         <span style={{ color: isProfit ? 'green' : 'red' }}>
-          {isProfit ? `+${(profit * qty).toFixed(2)}` : (profit * qty).toFixed(2)}
+          {isProfit ? `+${(profit * 1).toFixed(2)}` : (profit * 1).toFixed(2)}
         </span>
       );
     },
