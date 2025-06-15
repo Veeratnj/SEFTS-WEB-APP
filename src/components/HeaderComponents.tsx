@@ -49,7 +49,7 @@ const HeaderComponents: React.FC = () => {
 
   // Step 3: Redirect to a clean, non-auth page
   const domain_name = import.meta.env.VITE_DOMAIN;
-  window.location.href = `https://${domain_name}/logout.html`;
+  window.location.href = `https://${domain_name}`;
 };
 
 
