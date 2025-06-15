@@ -26,7 +26,7 @@ const HeaderComponents: React.FC = () => {
   const { name } = userData ? JSON.parse(userData) : { name: 'User' };
   const { role } = userData ? JSON.parse(userData) : { role: null };
 
-  const handleLogout = () => {
+  const handleLogout2 = () => {
     localStorage.removeItem('userData');
     localStorage.setItem('isAuthenticated', 'false');
     document.cookie.split(";").forEach(cookie => {
@@ -36,6 +36,22 @@ const HeaderComponents: React.FC = () => {
 
     window.location.href = '/login';
   };
+
+  const handleLogout = () => {
+  // Step 1: Clear localStorage
+  localStorage.clear();
+
+  // Step 2: Try clearing client-accessible cookies
+  document.cookie.split(";").forEach(cookie => {
+    const name = cookie.split("=")[0].trim();
+    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+  });
+
+  // Step 3: Redirect to a clean, non-auth page
+  const domain_name = import.meta.env.VITE_DOMAIN;
+  window.location.href = `https://${domain_name}/logout.html`;
+};
+
 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
