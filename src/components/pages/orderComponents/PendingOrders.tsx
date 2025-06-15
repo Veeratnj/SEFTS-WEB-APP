@@ -80,14 +80,16 @@ const PendingOrders: React.FC = () => {
           pendingOrders = response.data;
         } else if (response.data && Array.isArray(response.data.data)) {
           pendingOrders = response.data.data;
+          // console.log('API response data:', pendingOrders);
         } else {
           console.error('Unexpected API response format.', response.data);
         }
 
         const apiData = pendingOrders.map((item: any, index: number) => ({
+          
           key: String(index + 1),
           stockName: item.stockName || 'N/A',
-          orderType: item.orderType || 'Buy',
+          orderType: (item.orderType?.toLowerCase() === 'bullish' ? 'Buy' : 'Sell') as 'Buy' | 'Sell',
           qty: item.qty || 0,
           ltp: item.ltp || 0,
         }));
