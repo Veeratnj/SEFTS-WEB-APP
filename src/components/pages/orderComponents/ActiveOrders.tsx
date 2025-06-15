@@ -12,6 +12,7 @@ interface OrderDataType {
   entryLtp: number | null;
   ltp: number;
   gainLoss: string | null;
+  entryTime: string | null;
 }
 
 const columns: TableProps<OrderDataType>['columns'] = [
@@ -41,6 +42,12 @@ const columns: TableProps<OrderDataType>['columns'] = [
     dataIndex: 'entryLtp',
     key: 'entryLtp',
     render: (entryLtp: number | null) => (entryLtp !== null ? entryLtp : '-'),
+  },
+  {
+    title: 'Entry Time',
+    dataIndex: 'entryTime',
+    key: 'entryTime',
+    render: (entryTime: string | null) => (entryTime ? entryTime : '-'),
   },
   {
     title: 'LTP',
@@ -91,6 +98,7 @@ const ActiveOrders: React.FC = () => {
             entryLtp: item.entry_ltp ?? null,
             ltp: item.ltp,
             gainLoss: item.gainLoss,
+            entryTime: item.entry_time ? new Date(item.entry_time).toLocaleString() : null,
           }));
           setData(formattedData);
         } else {
