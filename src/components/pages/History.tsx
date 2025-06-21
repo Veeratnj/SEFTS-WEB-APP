@@ -11,12 +11,12 @@ type Trade = {
   pnl: number;
   date: string;
   entry_time?: string;
-  exit_time?: string; 
+  exit_time?: string;
 };
 
 export default function TradeHistory() {
-  const [originalTrades, setOriginalTrades] = useState<Trade[]>([]); // Store original data
-  const [trades, setTrades] = useState<Trade[]>([]); // Store filtered data
+  const [originalTrades, setOriginalTrades] = useState<Trade[]>([]);
+  const [trades, setTrades] = useState<Trade[]>([]);
   const [tradeTypeFilter, setTradeTypeFilter] = useState('');
   const [dateFilter, setDateFilter] = useState<'1D' | '1W' | '1M' | '1Y' | 'ALL'>('ALL');
   const [sortField, setSortField] = useState<'entry' | 'exit' | 'date'>('date');
@@ -26,12 +26,12 @@ export default function TradeHistory() {
 
   const formatTimestamp = (timestamp: string): string => {
     const date = new Date(timestamp);
-    const formattedDate = date.toISOString().split('T')[0]; // Extract the date part (YYYY-MM-DD)
+    const formattedDate = date.toISOString().split('T')[0];
     const formattedTime = date.toLocaleString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true,
-    }); // Format time as 09:27 AM
+    });
     return `${formattedDate} ${formattedTime}`;
   };
 
@@ -43,7 +43,6 @@ export default function TradeHistory() {
       .get(`${baseUrl}/portfolios/trade-history/${user_id}`)
       .then(res => {
         const apiData = res.data;
-
         const formattedTrades: Trade[] = apiData.map((item: any) => ({
           stock: item.stock_name,
           type: item.trade_type.toLowerCase() === 'buy' ? 'Buy' : 'Sell',
@@ -55,9 +54,8 @@ export default function TradeHistory() {
           entry_time: formatTimestamp(item.trade_entry_time),
           exit_time: formatTimestamp(item.trade_exit_time),
         }));
-
-        setOriginalTrades(formattedTrades); // Save original data
-        setTrades(formattedTrades); // Initialize filtered data
+        setOriginalTrades(formattedTrades);
+        setTrades(formattedTrades);
       })
       .catch(err => console.error('Error fetching trade history:', err));
   }, []);
@@ -65,15 +63,14 @@ export default function TradeHistory() {
   useEffect(() => {
     if (fromDate && toDate) {
       const filteredByDateRange = originalTrades.filter(trade => {
-        const tradeDate = trade.date; // Already normalized to YYYY-MM-DD during formatting
-        const from = fromDate.toISOString().split('T')[0]; // Normalize fromDate to YYYY-MM-DD
-        const to = toDate.toISOString().split('T')[0]; // Normalize toDate to YYYY-MM-DD
-
-        return tradeDate >= from && tradeDate <= to; // Compare normalized dates
+        const tradeDate = trade.date;
+        const from = fromDate.toISOString().split('T')[0];
+        const to = toDate.toISOString().split('T')[0];
+        return tradeDate >= from && tradeDate <= to;
       });
       setTrades(filteredByDateRange);
     } else {
-      setTrades(originalTrades); // Reset to original data if no date range is selected
+      setTrades(originalTrades);
     }
   }, [fromDate, toDate, originalTrades]);
 
@@ -111,10 +108,10 @@ export default function TradeHistory() {
   const totalPnl = filteredTrades.reduce((acc, trade) => acc + trade.pnl, 0);
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6">
       {/* Filter and P&L Display */}
-      <div className="flex flex-col md:flex-row justify-between items-center mb-4 gap-4">
-        <div className="flex flex-wrap gap-2">
+      <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center mb-4">
+        <div className="flex flex-wrap gap-2 items-center">
           {['1D', '1W', '1M', '1Y', 'ALL'].map(label => (
             <button
               key={label}
@@ -129,6 +126,7 @@ export default function TradeHistory() {
             </button>
           ))}
           <div className="flex flex-wrap gap-2 items-center">
+            <div>
             <label className="text-sm text-gray-700">From:</label>
             <input
               type="date"
@@ -136,6 +134,8 @@ export default function TradeHistory() {
               onChange={e => setFromDate(e.target.value ? new Date(e.target.value) : null)}
               className="px-3 py-1 rounded-lg border border-gray-300 text-sm"
             />
+            </div>
+            <div>
             <label className="text-sm text-gray-700">To:</label>
             <input
               type="date"
@@ -143,6 +143,7 @@ export default function TradeHistory() {
               onChange={e => setToDate(e.target.value ? new Date(e.target.value) : null)}
               className="px-3 py-1 rounded-lg border border-gray-300 text-sm"
             />
+            </div>
           </div>
         </div>
         <div className="text-right font-semibold text-base text-gray-800">
@@ -154,70 +155,67 @@ export default function TradeHistory() {
       </div>
 
       {/* Trade Table */}
-      
-{/* Trade Table */}
-<div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 flex-grow">
-  <div className="overflow-x-auto h-[calc(100vh-200px)]"> {/* Dynamically adjust height */}
-    <table className="min-w-full text-sm border-t">
-      <caption className="caption-top text-lg font-semibold text-gray-800 p-4 bg-gray-100">
-        Trade History
-      </caption>
+      <div className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 w-full">
+        <div className="overflow-x-auto max-h-[calc(100vh-200px)] w-full">
+          <table className="min-w-[900px] w-full text-sm border-t">
+            <caption className="caption-top text-lg font-semibold text-gray-800 p-4 bg-gray-100">
+              Trade History
+            </caption>
 
-      <motion.thead
-        className="bg-indigo-600 text-white sticky top-0 z-10"
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-      >
-        <tr>
-          <th className="px-6 py-3 text-left">Stock</th>
-          <th className="px-6 py-3 text-left">Type</th>
-          <th className="px-6 py-3 text-left">Entry</th>
-          <th className="px-6 py-3 text-left">Exit</th>
-          <th className="px-6 py-3 text-left">Entry time</th>
-          <th className="px-6 py-3 text-left">Exit time</th>
-          <th className="px-6 py-3 text-left">Qty</th>
-          <th className="px-6 py-3 text-left">P&L</th>
-          <th className="px-6 py-3 text-left">Date</th>
-        </tr>
-      </motion.thead>
-
-      <tbody>
-        {sortedTrades.length > 0 ? (
-          sortedTrades.map((trade, idx) => (
-            <tr
-              key={idx}
-              className="transition-all border-b even:bg-gradient-to-r even:from-gray-50 even:to-white hover:bg-indigo-100"
+            <motion.thead
+              className="bg-indigo-600 text-white sticky top-0 z-10"
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
             >
-              <td className="px-6 py-4 whitespace-nowrap">{trade.stock}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{trade.type}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{trade.entry}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{trade.exit}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{trade.entry_time}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{trade.exit_time}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{trade.qty}</td>
-              <td
-                className={`px-6 py-4 whitespace-nowrap font-semibold ${
-                  trade.pnl >= 0 ? 'text-green-600' : 'text-red-500'
-                }`}
-              >
-                {trade.pnl}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">{trade.date}</td>
-            </tr>
-          ))
-        ) : (
-          <tr>
-            <td colSpan={7} className="text-center px-6 py-6 text-gray-400 italic">
-              No matching trade records.
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  </div>
-</div>
-...
+              <tr>
+                <th className="px-6 py-3 text-left">Stock</th>
+                <th className="px-6 py-3 text-left">Type</th>
+                <th className="px-6 py-3 text-left">Entry</th>
+                <th className="px-6 py-3 text-left">Exit</th>
+                <th className="px-6 py-3 text-left">Entry time</th>
+                <th className="px-6 py-3 text-left">Exit time</th>
+                <th className="px-6 py-3 text-left">Qty</th>
+                <th className="px-6 py-3 text-left">P&L</th>
+                <th className="px-6 py-3 text-left">Date</th>
+              </tr>
+            </motion.thead>
+
+            <tbody>
+              {sortedTrades.length > 0 ? (
+                sortedTrades.map((trade, idx) => (
+                  <tr
+                    key={idx}
+                    className="transition-all border-b even:bg-gradient-to-r even:from-gray-50 even:to-white hover:bg-indigo-100"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">{trade.stock}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{trade.type}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{trade.entry}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{trade.exit}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{trade.entry_time}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{trade.exit_time}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{trade.qty}</td>
+                    <td
+                      className={`px-6 py-4 whitespace-nowrap font-semibold ${
+                        trade.pnl >= 0 ? 'text-green-600' : 'text-red-500'
+                      }`}
+                    >
+                      {trade.pnl}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{trade.date}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={9} className="text-center px-6 py-6 text-gray-400 italic">
+                    No matching trade records.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

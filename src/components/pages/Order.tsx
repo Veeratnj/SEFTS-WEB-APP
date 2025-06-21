@@ -34,7 +34,7 @@ const Order = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`py-2 px-4 font-semibold ${
+              className={`py-2 px-[0.400rem] font-semibold ${
                 activeTab === tab
                   ? 'border-b-2 border-blue-500 text-blue-500'
                   : 'text-gray-500 hover:text-blue-500'
