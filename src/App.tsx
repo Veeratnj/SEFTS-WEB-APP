@@ -22,14 +22,30 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 // Layout Component for Authenticated Routes
 const AuthenticatedLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+
+  // Handle window resize to detect mobile screen
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
     <div className="flex flex-col h-screen">
       <HeaderComponents />
       <div className="flex flex-1">
-        {sidebarOpen ? (
+        {/* Desktop layout with sidebar */}
+        {!isMobile && sidebarOpen ? (
           <Splitter style={{ width: '100%' }}>
-            <Splitter.Panel defaultSize="40%" min="20%" max="70%" style={{ position: 'relative' }}>
+            <Splitter.Panel
+              defaultSize="40%"
+              min="20%"
+              max="70%"
+              style={{ position: 'relative' }}
+            >
               <button
                 style={{
                   position: 'absolute',
@@ -63,24 +79,27 @@ const AuthenticatedLayout: React.FC = () => {
             </Splitter.Panel>
           </Splitter>
         ) : (
+          // Mobile or no-sidebar layout
           <div className="w-full p-4 overflow-auto relative">
-            <button
-              style={{
-                position: 'absolute',
-                top: 8,
-                left: 8,
-                zIndex: 10,
-                background: '#f0f0f0',
-                border: 'none',
-                borderRadius: 4,
-                padding: '2px 8px',
-                cursor: 'pointer'
-              }}
-              onClick={() => setSidebarOpen(true)}
-              aria-label="Open sidebar"
-            >
-              ≡
-            </button>
+            {!isMobile && (
+              <button
+                style={{
+                  position: 'absolute',
+                  top: 8,
+                  left: 8,
+                  zIndex: 10,
+                  background: '#f0f0f0',
+                  border: 'none',
+                  borderRadius: 4,
+                  padding: '2px 8px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => setSidebarOpen(true)}
+                aria-label="Open sidebar"
+              >
+                ≡
+              </button>
+            )}
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/order" element={<Order />} />
@@ -98,6 +117,7 @@ const AuthenticatedLayout: React.FC = () => {
   );
 };
 
+// Main App Component
 const App: React.FC = () => (
   <Router>
     <Routes>

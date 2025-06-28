@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Dropdown, Menu, Button } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Dropdown, Menu, Button, Drawer } from 'antd';
+import { UserOutlined, MenuOutlined } from '@ant-design/icons';
 import StockCard from './sub-components/StockCard';
 import logo from '../assets/logo.jpg';
 import '../css/HeaderComponent.css';
@@ -21,44 +21,27 @@ const HeaderComponents: React.FC = () => {
     { stock_name: 's2', points: 0, isUp: false, percentage: '' },
     { stock_name: 's3', points: 0, isUp: false, percentage: '' },
   ]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const userData = localStorage.getItem('userData');
   const { name } = userData ? JSON.parse(userData) : { name: 'User' };
   const { role } = userData ? JSON.parse(userData) : { role: null };
 
-  const handleLogout2 = () => {
-    localStorage.removeItem('userData');
-    localStorage.setItem('isAuthenticated', 'false');
-    document.cookie.split(";").forEach(cookie => {
-    const name = cookie.split("=")[0].trim();
-    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
-  });
-
-    window.location.href = '/login';
-  };
-
   const handleLogout = () => {
-  // Step 1: Clear localStorage
-  localStorage.clear();
-
-  // Step 2: Try clearing client-accessible cookies
-  document.cookie.split(";").forEach(cookie => {
-    const name = cookie.split("=")[0].trim();
-    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
-  });
-
-  // Step 3: Redirect to a clean, non-auth page
-  const domain_name = import.meta.env.VITE_DOMAIN;
-  window.location.href = `https://${domain_name}`;
-};
-
+    localStorage.clear();
+    document.cookie.split(";").forEach(cookie => {
+      const name = cookie.split("=")[0].trim();
+      document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/';
+    });
+    const domain_name = import.meta.env.VITE_DOMAIN;
+    window.location.href = `https://${domain_name}`;
+  };
 
   useEffect(() => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
     const url = `${baseUrl}/websocket/ws/stocks`;
     const userData = localStorage.getItem('userData');
     const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
-   
     const clientId = `${user_id}`;
     const tokens = ['99926000', '99926009', '99926037'];
 
@@ -91,16 +74,11 @@ const HeaderComponents: React.FC = () => {
     };
   }, []);
 
-  // Dropdown menu items
   const menu = (
     <Menu>
-      <Menu.Item key="1">
-        <p><strong>Name:</strong> {name}</p>
-      </Menu.Item>
+      <Menu.Item key="1"><p><strong>Name:</strong> {name}</p></Menu.Item>
       <Menu.Divider />
-      <Menu.Item key="2" onClick={handleLogout}>
-        Logout
-      </Menu.Item>
+      <Menu.Item key="2" onClick={handleLogout}>Logout</Menu.Item>
     </Menu>
   );
 
@@ -108,7 +86,6 @@ const HeaderComponents: React.FC = () => {
     <header className="header-wrapper">
       <div className="header-inner">
         <div className="header-container">
-          {/* Left container: Logo + stock cards */}
           <div className="left-container">
             <div className="logo">
               <img src={logo} alt="Logo" />
@@ -127,66 +104,22 @@ const HeaderComponents: React.FC = () => {
             </div>
           </div>
 
-          {/* Right container: Navigation links + Profile */}
           <div className="right-container">
-            <nav>
+            {/* Hamburger Icon for Mobile */}
+            <MenuOutlined className="hamburger-icon" onClick={() => setIsDrawerOpen(true)} />
+
+            {/* Desktop Navigation */}
+            <nav className="nav-desktop">
               <ul>
-                <li>
-                  <NavLink
-                    to="/home"
-                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                  >
-                    Home
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/order"
-                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                  >
-                    Order
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/market"
-                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                  >
-                    Market
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/tools"
-                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                  >
-                    Tools
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/brokers"
-                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                  >
-                    Brokers
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/history"
-                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                  >
-                    History
-                  </NavLink>
-                </li>
-                { role ==='admin' && <li>
-                  <NavLink
-                    to="/admin"
-                    className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-                  >
-                    Admin
-                  </NavLink>
-                </li>}
+                <li><NavLink to="/home" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>Home</NavLink></li>
+                <li><NavLink to="/order" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>Order</NavLink></li>
+                <li><NavLink to="/market" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>Market</NavLink></li>
+                <li><NavLink to="/tools" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>Tools</NavLink></li>
+                <li><NavLink to="/brokers" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>Brokers</NavLink></li>
+                <li><NavLink to="/history" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>History</NavLink></li>
+                {role === 'admin' && (
+                  <li><NavLink to="/admin" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>Admin</NavLink></li>
+                )}
               </ul>
             </nav>
 
@@ -197,6 +130,28 @@ const HeaderComponents: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Drawer Navigation */}
+      <Drawer
+        title={`Hello, ${name}`}
+        placement="right"
+        onClose={() => setIsDrawerOpen(false)}
+        open={isDrawerOpen}
+        className="mobile-drawer"
+      >
+        <ul className="mobile-nav">
+          <li><NavLink to="/home" onClick={() => setIsDrawerOpen(false)}>Home</NavLink></li>
+          <li><NavLink to="/order" onClick={() => setIsDrawerOpen(false)}>Order</NavLink></li>
+          <li><NavLink to="/market" onClick={() => setIsDrawerOpen(false)}>Market</NavLink></li>
+          <li><NavLink to="/tools" onClick={() => setIsDrawerOpen(false)}>Tools</NavLink></li>
+          <li><NavLink to="/brokers" onClick={() => setIsDrawerOpen(false)}>Brokers</NavLink></li>
+          <li><NavLink to="/history" onClick={() => setIsDrawerOpen(false)}>History</NavLink></li>
+          {role === 'admin' && (
+            <li><NavLink to="/admin" onClick={() => setIsDrawerOpen(false)}>Admin</NavLink></li>
+          )}
+          <li><Button type="link" onClick={handleLogout}>Logout</Button></li>
+        </ul>
+      </Drawer>
     </header>
   );
 };
