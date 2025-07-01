@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Table, Select, Button, Spin, message } from 'antd';
+import { Table, Select, Button, message, DatePicker } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
+
+const { RangePicker } = DatePicker;
 
 type Trade = {
   stock: string;
@@ -16,15 +20,15 @@ type Trade = {
 };
 
 export default function TradeHistory() {
+  const [allTrades, setAllTrades] = useState<Trade[]>([]);
   const [trades, setTrades] = useState<Trade[]>([]);
   const [tradeTypeFilter, setTradeTypeFilter] = useState('');
   const [dateFilter, setDateFilter] = useState<'1D' | '1W' | '1M' | '1Y' | 'ALL'>('ALL');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState<[Dayjs | null, Dayjs | null] | null>(null);
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalRecords, setTotalRecords] = useState(0);
-  const pageSize = 10;
+  const pageSize = 10000000;
 
   const formatTimestamp = (timestamp: string): string => {
     const date = new Date(timestamp);
@@ -61,7 +65,7 @@ export default function TradeHistory() {
         user_id,
         flag,
         limit: pageSize,
-        offset: (currentPage - 1) * pageSize,
+        offset: 0,
       };
 
       if (tradeTypeFilter) payload.type = tradeTypeFilter;
@@ -70,8 +74,8 @@ export default function TradeHistory() {
       const apiData = res.data?.data;
 
       if (!apiData || !Array.isArray(apiData.records)) {
+        setAllTrades([]);
         setTrades([]);
-        setTotalRecords(0);
         return;
       }
 
@@ -87,8 +91,7 @@ export default function TradeHistory() {
         exit_time: formatTimestamp(item.trade_exit_time),
       }));
 
-      setTrades(formatted);
-      setTotalRecords(apiData.total || 0);
+      setAllTrades(formatted);
     } catch (err) {
       console.error('API error:', err);
       message.error('Failed to load trade history.');
@@ -98,9 +101,24 @@ export default function TradeHistory() {
     }
   };
 
+  // Apply date range filter on frontend
+  useEffect(() => {
+    let filtered = [...allTrades];
+
+    if (dateRange && dateRange[0] && dateRange[1]) {
+      const start = dateRange[0].format('YYYY-MM-DD');
+      const end = dateRange[1].format('YYYY-MM-DD');
+
+      filtered = filtered.filter(trade => trade.date >= start && trade.date <= end);
+    }
+
+    setTrades(filtered);
+  }, [allTrades, dateRange]);
+
+  // Refetch when filters change
   useEffect(() => {
     fetchTrades();
-  }, [dateFilter, tradeTypeFilter, currentPage]);
+  }, [dateFilter, tradeTypeFilter]);
 
   const totalPnl = trades.reduce((acc, trade) => acc + trade.pnl, 0);
 
@@ -129,25 +147,22 @@ export default function TradeHistory() {
     <div className="max-w-7xl mx-auto p-6">
       {/* Filters */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
           {['1D', '1W', '1M', '1Y', 'ALL'].map(label => (
             <Button
               key={label}
               type={dateFilter === label ? 'primary' : 'default'}
               onClick={() => {
                 setDateFilter(label as any);
-                setCurrentPage(1);
               }}
             >
               {label}
             </Button>
           ))}
+
           <Select
             value={tradeTypeFilter}
-            onChange={(val) => {
-              setTradeTypeFilter(val);
-              setCurrentPage(1);
-            }}
+            onChange={(val) => setTradeTypeFilter(val)}
             style={{ width: 120 }}
             options={[
               { value: '', label: 'All Types' },
@@ -155,7 +170,20 @@ export default function TradeHistory() {
               { value: 'Sell', label: 'Sell' },
             ]}
           />
+
+          <RangePicker
+            value={dateRange}
+            onChange={(range) => setDateRange(range)}
+            format="YYYY-MM-DD"
+            allowClear
+            placeholder={['Start date', 'End date']}
+          />
+
+          {dateRange && (
+            <Button onClick={() => setDateRange(null)}>Clear Date Range</Button>
+          )}
         </div>
+
         <div className="flex gap-4 items-center">
           <div className="font-semibold text-gray-800">
             Total P&L:{' '}
@@ -163,7 +191,6 @@ export default function TradeHistory() {
               {totalPnl.toFixed(2)}
             </span>
           </div>
-          {/* Placeholder CSV download button (optional) */}
           <Button
             onClick={() => {
               const csvContent = [
@@ -195,14 +222,9 @@ export default function TradeHistory() {
         columns={columns}
         dataSource={trades}
         loading={loading}
+        // rowKey={(_, index) => index.toString()}
         rowKey={(_, index) => (index !== undefined ? index.toString() : Math.random().toString())}
-        pagination={{
-          current: currentPage,
-          pageSize,
-          total: totalRecords,
-          onChange: (page) => setCurrentPage(page),
-          showSizeChanger: false,
-        }}
+        pagination={false}
         bordered
       />
     </div>
