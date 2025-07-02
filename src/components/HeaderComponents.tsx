@@ -6,6 +6,7 @@ import StockCard from './sub-components/StockCard';
 import logo from '../assets/logo.jpg';
 import '../css/HeaderComponent.css';
 import { websocket_api_call } from '../services/Websocket';
+import { color } from 'framer-motion';
 
 // Type definition for the stock data
 interface Stock {
@@ -127,6 +128,7 @@ const HeaderComponents: React.FC = () => {
             <Dropdown overlay={menu} placement="bottomRight" arrow>
               <UserOutlined className="profile-icon" />
             </Dropdown>
+            <h1 style={{ color: "white" }}>{name}</h1>
           </div>
         </div>
       </div>
