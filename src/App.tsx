@@ -1,6 +1,5 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Splitter } from 'antd'; // Make sure you have antd@5.13.0+ installed
 
 import HeaderComponents from './components/HeaderComponents';
 import SidebarComponent from './components/SidebarComponent';
@@ -9,9 +8,9 @@ import Order from './components/pages/Order';
 import Market from './components/pages/Market';
 import Tools from './components/pages/Tools';
 import Broker from './components/pages/Brokers';
-import History from './components/pages/History';
 import Login from './components/pages/Login';
 import Admin from './components/pages/Admin';
+import TradeHistoryMain from './components/pages/TradeHistoryMain';
 
 // PrivateRoute Component
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -24,11 +23,8 @@ const AuthenticatedLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState(true);
   const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
 
-  // Handle window resize to detect mobile screen
   React.useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -39,63 +35,35 @@ const AuthenticatedLayout: React.FC = () => {
       <div className="flex flex-1">
         {/* Desktop layout with sidebar */}
         {!isMobile && sidebarOpen ? (
-          <Splitter style={{ width: '100%' }}>
-            <Splitter.Panel
-              defaultSize="40%"
-              min="20%"
-              max="70%"
-              style={{ position: 'relative' }}
-            >
+          <>
+            <div className="w-1/4 relative border-r">
               <button
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  right: 8,
-                  zIndex: 10,
-                  background: '#f0f0f0',
-                  border: 'none',
-                  borderRadius: 4,
-                  padding: '2px 8px',
-                  cursor: 'pointer'
-                }}
+                className="absolute top-2 right-2 z-10 bg-gray-200 rounded px-2"
                 onClick={() => setSidebarOpen(false)}
-                aria-label="Close sidebar"
               >
                 ×
               </button>
               <SidebarComponent />
-            </Splitter.Panel>
-            <Splitter.Panel>
+            </div>
+            <div className="w-3/4 overflow-auto p-4">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/order" element={<Order />} />
                 <Route path="/brokers" element={<Broker />} />
                 <Route path="/market" element={<Market />} />
                 <Route path="/tools" element={<Tools />} />
-                <Route path="/history" element={<History />} />
+                <Route path="/history" element={<TradeHistoryMain />} />
                 <Route path="/home" element={<Navigate to="/" />} />
                 <Route path="/admin" element={<Admin />} />
               </Routes>
-            </Splitter.Panel>
-          </Splitter>
+            </div>
+          </>
         ) : (
-          // Mobile or no-sidebar layout
           <div className="w-full p-4 overflow-auto relative">
             {!isMobile && (
               <button
-                style={{
-                  position: 'absolute',
-                  top: 8,
-                  left: 8,
-                  zIndex: 10,
-                  background: '#f0f0f0',
-                  border: 'none',
-                  borderRadius: 4,
-                  padding: '2px 8px',
-                  cursor: 'pointer'
-                }}
+                className="absolute top-2 left-2 z-10 bg-gray-200 rounded px-2"
                 onClick={() => setSidebarOpen(true)}
-                aria-label="Open sidebar"
               >
                 ≡
               </button>
@@ -106,7 +74,7 @@ const AuthenticatedLayout: React.FC = () => {
               <Route path="/brokers" element={<Broker />} />
               <Route path="/market" element={<Market />} />
               <Route path="/tools" element={<Tools />} />
-              <Route path="/history" element={<History />} />
+              <Route path="/history" element={<TradeHistoryMain />} />
               <Route path="/home" element={<Navigate to="/" />} />
               <Route path="/admin" element={<Admin />} />
             </Routes>
