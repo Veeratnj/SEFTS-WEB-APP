@@ -10,6 +10,9 @@ interface OptionOrderDataType {
   qty: number;
   entryLtp: number | null;
   entryTime: string | null;
+  entryPrice: number | null;
+  currentLtp: number | null;
+  profit: number | null;
 }
 
 const columns: TableProps<OptionOrderDataType>['columns'] = [
@@ -44,25 +47,47 @@ const columns: TableProps<OptionOrderDataType>['columns'] = [
     key: 'entryTime',
     render: (entryTime: string | null) => (entryTime ? entryTime : '-'),
   },
+  {
+    title: 'Entry Price',
+    dataIndex: 'entryPrice',
+    key: 'entryPrice',
+    render: (entryPrice: number | null) => (entryPrice !== null ? entryPrice : '-'),
+  },
+  {
+    title: 'Current LTP',
+    dataIndex: 'currentLtp',
+    key: 'currentLtp',
+    render: (currentLtp: number | null) => (currentLtp !== null ? currentLtp : '-'),
+  },
+  {
+  title: 'Profit',
+  dataIndex: 'profit',
+  key: 'profit',
+  render: (profit: number | null) => {
+    if (profit === null) return '-';
+    const color = profit >= 0 ? 'green' : 'red';
+    return <span style={{ color, fontWeight: 600 }}>{profit.toFixed(2)}</span>;
+  },
+}
 ];
 
 const ActiveOptionOrders: React.FC = () => {
   const [data, setData] = useState<OptionOrderDataType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchOptionOrders = async () => {
-      try {
-        setLoading(true);
-        const userData = localStorage.getItem('userData');
-        const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
-        const baseUrl = import.meta.env.VITE_API_BASE_URL;
+useEffect(() => {
+  const fetchOptionOrders = async () => {
+    try {
+      setLoading(true);
+      const userData = localStorage.getItem('userData');
+      const { user_id } = userData ? JSON.parse(userData) : { user_id: null };
+      const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
-        const response = await axios.get(`${baseUrl}/option/trade/open/${user_id}`);
+      const response = await axios.get(`${baseUrl}/option/trade/open/${user_id}`);
 
-        const formattedData: OptionOrderDataType[] = response.data.map((item: any, index: number) => {
+      const formattedData: OptionOrderDataType[] = response.data.map(
+        (item: any, index: number) => {
           const optionType = item.option_symbol.endsWith('CE') ? 'CE' : 'PE';
-
           return {
             key: index,
             optionSymbol: item.option_symbol,
@@ -72,28 +97,34 @@ const ActiveOptionOrders: React.FC = () => {
             entryTime: item.trade_entry_time
               ? new Date(item.trade_entry_time).toLocaleString()
               : null,
+            entryPrice: item.entry_ltp ?? null,
+            currentLtp: item.current_ltp ?? null,
+            profit: item.profit ?? null,
           };
-        });
+        }
+      );
 
-        setData(formattedData);
-      } catch (error) {
-        console.error('Options Fetch Error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      setData(formattedData);
+    } catch (error) {
+      console.error('Options Fetch Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchOptionOrders();
-    const intervalId = setInterval(fetchOptionOrders, 60000); // refresh every minute
-    return () => clearInterval(intervalId);
-  }, []);
+  fetchOptionOrders(); // first call immediately
+  const intervalId = setInterval(fetchOptionOrders, 1500); // every 1.5 seconds
+  return () => clearInterval(intervalId);
+}, []);
+
 
   return (
     <div>
       <Table<OptionOrderDataType>
         columns={columns}
         dataSource={data}
-        loading={loading}
+        // loading={loading}
+         loading={false}
         pagination={false}
         scroll={{ x: true }}
       />

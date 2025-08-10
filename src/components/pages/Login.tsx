@@ -25,7 +25,7 @@ const Login: React.FC = () => {
         email: username,
         password: password,
       });
-
+      console.log("login API response",response)
       const result = response.data;
 
       if (response.status === 200 && result.status === 200) {
